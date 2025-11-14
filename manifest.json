@@ -1,0 +1,33 @@
+{
+  "nombre " : " LOGICSOFT "
+  "nombre_corto" : " LOGISOCSOFT " ,
+  "start_url" : " . " ,
+  "alcance" : " . " ,
+  "pantalla" : " independiente " ,
+  "background_color" : " #ffffff " ,
+  "color_tema" : " #003366 " ,
+  "iconos" : [
+    {
+      "src" : " icons/icon-192.png " ,
+      "tamaños " : " 192x192 "
+      "tipo" : " imagen/png "
+    },
+    {
+      "src" : " icons/icon-512.png " ,
+      "tamaños " : " 512x512 "
+      "tipo" : " imagen/png "
+    },
+    {
+      "src" : " icons/icon-192-maskable.png " ,
+      "tamaños " : " 192x192 "
+      "tipo" : " imagen/png " ,
+      "propósito" : " enmascarable "
+    },
+    {
+      "src" : " icons/icon-512-maskable.png " ,
+      "tamaños " : " 512x512 "
+      "tipo" : " imagen/png " ,
+      "propósito" : " enmascarable "
+    }
+  ]
+}
