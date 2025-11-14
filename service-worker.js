@@ -1,38 +1,46 @@
-const  CACHE_NAME  =  'logicsoft-cache-v1' ;
-constante  ACTIVOS  =  [
-  './' ,
-  './index.html' ,
+const CACHE_NAME = 'logicsoft-cache-v1';
+
+const ASSETS = [
+  './',
+  './index.html',
   './manifest.json'
-  // Nota: tus iconos ya existentes se cachearán bajo demanda,
-  // o puedes listarlos aquí si conoces sus nombres exactos.
-] ;
+  // Puedes agregar más archivos si quieres precachearlos
+];
 
-self.addEventListener ( 'install ' , ( event ) = > {   
-  evento . esperarHasta (
-    cachés.abrir ( NOMBRE_CACHÉ ) .entonces ( caché = > caché.agregarTodos ( ACTIVOS ) )​​​​  
-  ) ;
-  self.skipWaiting ( ) ;​​
-} ) ;
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
+  self.skipWaiting();
+});
 
-self.addEventListener ( ' activate ' , ( event ) = > {   
-  evento . esperarHasta (
-    caches.keys ( ) . then ( keys = > Promise.all ( keys.map ( k = > k ! == CACHE_NAME ? caches.delete ( k ) : null ) ) )​​​​​      
-  ) ;
-  auto.clientes.reclamar ( ) ;​​​​
-} ) ;
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null))
+      )
+    )
+  );
+  self.clients.claim();
+});
 
-self.addEventListener ( ' fetch ' , ( event ) = > {   
-  const  req  =  event.request ;​​
-  // Estrategia: cache-first para GET, passthrough para otras
-  if  ( req . method  !==  'GET' )  return ;
-  evento . responderCon (
-    cachés.coincide ( req ) .entonces ( cached = > {​​  
-      Si  ( en caché )  devolver  en caché ;
-      return  fetch ( req ) .then ( res = > {  
-        const  copia  =  res.clone ( ) ;​​
-        cachés.open ( NOMBRE_CACHÉ ) .then ( caché = > caché.put ( req , copia ) ) ;​​​​   
-        devolver  res ;
-      } ) .catch ( ( ) = > cached || Response.error ( ) ) ;​​    
-    } )
-  ) ;
-} ) ;
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+
+  if (req.method !== 'GET') return;
+
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+
+      return fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          return res;
+        })
+        .catch(() => cached || Response.error());
+    })
+  );
+});
