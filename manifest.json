@@ -1,0 +1,9 @@
+{
+  "name": "Simulador de Compuertas Logicas",
+  "short_name": "LogicSim",
+  "start_url": "LogicSim_PWA_index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d2b5c",
+  "icons": []
+}
