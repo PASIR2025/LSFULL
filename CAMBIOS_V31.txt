@@ -1,0 +1,8 @@
+SimuPLC HMI Profesional V31 PWA
+
+- Corregida la generación ilimitada de cajas: la banda crea una nueva caja cuando la entrada queda libre, aunque la desaparición en salida esté desactivada.
+- Si “Desaparecer en salida” está desactivado, las cajas permanecen visibles al terminar la banda.
+- Si “Aparecer en entrada” está desactivado y “Desaparecer en salida” está activado, todas las cajas manuales desaparecen al salir.
+- Al detener, se eliminan las cajas generadas durante la simulación y se restauran las cajas colocadas en Diseño.
+- Menor carga en HMI y Ladder: actualización visual a 25 FPS, lectura Ladder limitada, eliminación de ejecución duplicada y envío de entradas por lotes.
+- Paquete PWA completo con manifest, service worker, assets, iconos, verificación TWA y ejemplos de hardware.

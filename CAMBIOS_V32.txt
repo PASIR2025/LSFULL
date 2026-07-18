@@ -1,0 +1,26 @@
+SIMUPLC HMI PROFESIONAL V32
+===========================
+
+Archivos modificados respecto a V31:
+- index.html
+- assets/js/hmi-global-control-v22.js
+- service-worker.js
+
+Correcciones:
+1. Barra HMI móvil vertical
+   - El grupo HMI / FÍSICO / AMBOS ocupa una fila independiente.
+   - Los botones ya no se superponen ni quedan ocultos.
+   - Se ajustó la altura disponible del área HMI en orientación vertical.
+
+2. Selector global con Arduino
+   - La elección del usuario es la autoridad visual y funcional.
+   - Una respuesta antigua del controlador indicando BOTH/AMBOS ya no devuelve la interfaz a AMBOS.
+   - Los botones móviles detienen propagación y responden mejor al toque.
+   - Se mantiene el envío MODE,HMI / MODE,PHYSICAL / MODE,BOTH al controlador.
+
+3. Salidas negadas antes de Operación
+   - Variables como !Q1 permanecen apagadas mientras la simulación está detenida.
+   - La negación se evalúa normalmente después de iniciar Operación.
+
+4. PWA
+   - Caché actualizada a V32 para forzar la descarga de los archivos corregidos.
