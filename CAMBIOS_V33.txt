@@ -1,0 +1,28 @@
+SIMUPLC HMI PROFESIONAL V33
+
+CORRECCIONES PRINCIPALES
+
+1. USB / OTG EN ANDROID
+- El selector USB se abre inmediatamente desde el toque del usuario.
+- En Android se muestran todos los dispositivos USB conectados para evitar que algunos Arduino o convertidores queden ocultos por los filtros del navegador.
+- Compatibilidad ampliada para CDC-ACM, CH340/CH341, CP210x, FTDI y dispositivos bulk compatibles.
+- El botón Conectar selecciona automáticamente USB/OTG en Android cuando la conexión estaba en Simulación.
+- Si la PWA o APK no expone WebUSB, aparece la opción Abrir en Chrome.
+- El diagnóstico USB se actualizó a V20.
+
+2. MODO SOLO FÍSICO ESTABLE
+- Los pulsadores del HMI ya no alternan entre el estado efectivo y el estado HMI.
+- En Solo físico, el dibujo se alimenta únicamente de PHYSICAL_INPUTS enviados por Arduino.
+- Se añadió un filtro visual breve contra rebotes.
+- El módulo de control global ya no vuelve a pintar los pulsadores por separado, evitando dos motores visuales compitiendo.
+- El HMI queda como visualización: solo se anima el control físico realmente accionado.
+
+3. BARRA SUPERIOR EN MÓVIL VERTICAL
+- Todos los botones quedan en una sola fila.
+- No se amontonan ni se superponen.
+- La barra se desplaza horizontalmente con el dedo de izquierda a derecha.
+- HMI / FÍSICO / AMBOS permanece dentro de la misma fila desplazable.
+
+4. PWA
+- Caché actualizada a V33.
+- Se conserva la estructura completa: assets, icons, hardware, manifest, service worker y .well-known.
