@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Diagnóstico USB Android V42 — SimuPLC</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#102a43;background:#eaf0f5}*{box-sizing:border-box}body{margin:0;padding:12px}.card{max-width:820px;margin:auto;background:#fff;border:1px solid #b8c7d4;border-radius:18px;box-shadow:0 18px 50px rgba(15,42,67,.16);padding:18px}h1{margin:0 0 5px;color:#06496d;font-size:24px}p{line-height:1.48}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}.item{border:1px solid #d5dde5;border-radius:11px;padding:10px;background:#f8fafc}.item span{display:block;text-transform:uppercase;font-size:10px;font-weight:800;color:#627d98}.item b{display:block;margin-top:5px;overflow-wrap:anywhere}.actions{display:flex;flex-wrap:wrap;gap:8px}.actions button{border:1px solid #0b638c;border-radius:10px;padding:11px 13px;background:#0b638c;color:#fff;font-weight:900;font-size:14px}.actions button.secondary{background:#fff;color:#0b638c}.actions button.on{background:#15803d;border-color:#15803d}.actions button.off{background:#b91c1c;border-color:#b91c1c}.actions button:disabled{opacity:.45}.status{margin-top:14px;border-radius:11px;padding:11px;background:#eaf7ef;border:1px solid #8fd3aa;font-weight:800}.status.error{background:#fff1f0;border-color:#ef9a9a;color:#922}.log{margin-top:11px;min-height:220px;max-height:380px;overflow:auto;background:#071521;color:#d1fae5;border-radius:11px;padding:11px;white-space:pre-wrap;font:12px/1.5 Consolas,monospace}.note{font-size:13px;color:#38566f;background:#eef5fa;border-radius:10px;padding:10px;margin-top:12px}.good{color:#166534}.bad{color:#991b1b}@media(max-width:620px){body{padding:6px}.card{padding:12px;border-radius:12px}.grid{grid-template-columns:1fr}.actions button{flex:1 1 46%}}
+</style>
+</head>
+<body>
+<main class="card">
+<h1>Diagnóstico USB Android V42</h1>
+<p>Esta página evita el HMI y envía los comandos directamente al endpoint USB del Arduino. Así se distingue si el problema está en la comunicación USB o en el pulsador de la pantalla.</p>
+<div class="grid">
+<div class="item"><span>Android</span><b id="android">—</b></div>
+<div class="item"><span>HTTPS</span><b id="secure">—</b></div>
+<div class="item"><span>WebUSB</span><b id="webusb">—</b></div>
+<div class="item"><span>Placa</span><b id="device">No seleccionada</b></div>
+<div class="item"><span>Interfaces</span><b id="interfaces">—</b></div>
+<div class="item"><span>Endpoints</span><b id="endpoints">—</b></div>
+</div>
+<div class="actions">
+<button id="connectBtn">1. Conectar Arduino por WebUSB</button>
+<button class="secondary" id="pingBtn" disabled>PING</button>
+<button class="on" id="onBtn" disabled>I1 = 1 fijo</button>
+<button class="off" id="offBtn" disabled>I1 = 0</button>
+<button class="secondary" id="rawOnBtn" disabled>Enviar byte 1</button>
+<button class="secondary" id="rawOffBtn" disabled>Enviar byte 0</button>
+<button class="secondary" id="stateBtn" disabled>GET_STATE</button>
+<button class="secondary" id="closeBtn" disabled>Desconectar</button>
+</div>
+<div class="status" id="status">Carga primero el programa PRUEBA_ANDROID_DIRECTA_V42.ino y después conecta la placa.</div>
+<pre class="log" id="log"></pre>
+<div class="note"><b>Lectura del resultado:</b><br>• Si aparece <span class="good">USB OUT confirmado</span> y el LED 13 cambia, WebUSB funciona y el fallo estaba en el manejo del pulsador del HMI.<br>• Si aparece <span class="good">USB OUT confirmado</span> pero el LED no cambia, el programa cargado en Arduino no es el de la prueba o el pin/salida no coincide.<br>• Si aparece <span class="bad">USB OUT excedió 1800 ms</span>, Chrome abrió el dispositivo pero Android dejó bloqueada la transferencia de salida.</div>
+</main>
+<script src="./assets/js/webusb-serial-v22.js?v=42"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const encoder=new TextEncoder(),decoder=new TextDecoder();
+let port=null,reading=false,lineBuffer='',readTask=null,sendChain=Promise.resolve();
+function stamp(){return new Date().toLocaleTimeString();}
+function log(text,type){$('log').textContent+='['+stamp()+'] '+(type==='rx'?'← ':type==='tx'?'→ ':type==='ok'?'✓ ':type==='err'?'⚠ ':'')+text+'\n';$('log').scrollTop=$('log').scrollHeight;}
+function status(text,error){$('status').textContent=text;$('status').className='status'+(error?' error':'');}
+function hex(v){return Number(v||0).toString(16).toUpperCase().padStart(4,'0');}
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+function timeout(p,ms,label){let t;return Promise.race([Promise.resolve(p).finally(()=>clearTimeout(t)),new Promise((_,rej)=>{t=setTimeout(()=>rej(new Error((label||'Operación')+' excedió '+ms+' ms')),ms);})]);}
+function enable(v){['pingBtn','onBtn','offBtn','rawOnBtn','rawOffBtn','stateBtn','closeBtn'].forEach(id=>$(id).disabled=!v);$('connectBtn').disabled=v;}
+function processChunk(text){lineBuffer+=text;let i;while((i=lineBuffer.indexOf('\n'))>=0){const line=lineBuffer.slice(0,i).replace(/\r$/,'').trim();lineBuffer=lineBuffer.slice(i+1);if(line)log(line,'rx');}}
+async function readLoop(){reading=true;try{while(reading&&port){const bytes=await port.readDirect(64);if(bytes&&bytes.byteLength)processChunk(decoder.decode(bytes,{stream:true}));}}catch(e){if(reading)log('RX: '+e.message,'err');}}
+async function send(command){if(!port)throw new Error('Arduino no conectado.');const payload=encoder.encode(command+'\n');sendChain=sendChain.catch(()=>{}).then(async()=>{const result=await timeout(port.writeDirect(payload),1800,'USB OUT');log(command,'tx');const dbg=port.getDebugInfo();log('USB OUT confirmado · EP'+dbg.outEndpointNumber+' · '+result.bytesWritten+' bytes','ok');return result;});return sendChain;}
+async function connect(){
+  if(!window.isSecureContext)throw new Error('Abre esta página mediante HTTPS.');
+  if(!navigator.usb)throw new Error('WebUSB no está disponible en este navegador.');
+  if(!window.SimuPLCWebUsbSerial)throw new Error('No cargó el controlador WebUSB V22.');
+  status('Selecciona Arduino Uno en la ventana de Chrome…');
+  port=await window.SimuPLCWebUsbSerial.requestPort();
+  const info=port.getInfo();$('device').textContent=(info.productName||'Arduino')+' · VID '+hex(info.usbVendorId)+' / PID '+hex(info.usbProductId);
+  status('Abriendo interfaces USB y esperando el reinicio del Arduino…');
+  await port.open({baudRate:115200,dataBits:8,stopBits:1,parity:'none',flowControl:'none'});
+  const dbg=port.getDebugInfo();$('interfaces').textContent='Control '+dbg.controlInterfaceNumber+' · Datos '+dbg.dataInterfaceNumber;$('endpoints').textContent='OUT EP'+dbg.outEndpointNumber+' · IN EP'+dbg.inEndpointNumber+' · '+dbg.packetSize+' bytes';
+  log('WebUSB abierto · '+$('interfaces').textContent+' · '+$('endpoints').textContent,'ok');
+  await delay(2200);
+  await send('HELLO,SIMUPLC,1');
+  readTask=readLoop();
+  await delay(250);
+  await send('GET_STATE');
+  enable(true);status('Conectado. Pulsa “I1 = 1 fijo”; el LED 13 debe cambiar y permanecer así hasta pulsar “I1 = 0”.');
+}
+$('connectBtn').addEventListener('click',()=>connect().catch(e=>{status(e.message,true);log(e.message,'err');try{port&&port.close();}catch(_){ }port=null;enable(false);}));
+$('pingBtn').addEventListener('click',()=>send('PING').catch(e=>status(e.message,true)));
+$('onBtn').addEventListener('click',()=>send('SET,I1,1').catch(e=>status(e.message,true)));
+$('offBtn').addEventListener('click',()=>send('SET,I1,0').catch(e=>status(e.message,true)));
+$('rawOnBtn').addEventListener('click',()=>send('1').catch(e=>status(e.message,true)));
+$('rawOffBtn').addEventListener('click',()=>send('0').catch(e=>status(e.message,true)));
+$('stateBtn').addEventListener('click',()=>send('GET_STATE').catch(e=>status(e.message,true)));
+$('closeBtn').addEventListener('click',async()=>{reading=false;try{await port.close();}catch(e){}port=null;enable(false);status('Desconectado.');log('Puerto cerrado.');});
+(function init(){const ua=navigator.userAgent||'';$('android').textContent=/Android/i.test(ua)?'Sí':'No';$('secure').textContent=window.isSecureContext?'Sí':'No';$('webusb').textContent=navigator.usb?'Disponible':'No disponible';if(!window.isSecureContext)status('La página debe abrirse por HTTPS.',true);else if(!navigator.usb)status('Este navegador no ofrece WebUSB.',true);})();
+})();
+</script>
+</body>
+</html>
