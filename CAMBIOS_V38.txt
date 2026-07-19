@@ -1,9 +1,0 @@
-SIMUPLC HMI PROFESIONAL V38
-
-- Restaurado el transporte WebUSB Android completo de la V19 estable.
-- Eliminada la agrupación que podía cancelar pulsos rápidos del HMI.
-- SET se transmite directamente y luego se solicita el estado, como en V19.
-- Sincronización múltiple secuencial para no mezclar estados.
-- Modo HMI/Físico/Ambos conservado sin ráfaga inmediata de GET_STATE.
-- Añadida prueba Arduino UNO I1=D2, Q1=D13 para Android/OTG.
-- Caché PWA V38 unificada.
