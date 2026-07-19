@@ -1,0 +1,11 @@
+SimuPLC HMI Profesional V36
+
+- Corrección del bloqueo de datos por WebUSB en Android.
+- Los comandos SET se agrupan y se envían en una cola controlada.
+- Se eliminó GET_STATE después de cada pulsación HMI.
+- El heartbeat ya no consulta continuamente mientras el Arduino envía estados.
+- GET_STATE se deduplica y solo se usa cuando los datos realmente están atrasados.
+- Sincronización inicial espaciada para evitar saturar USB/OTG.
+- Se conserva el controlador WebUSB V19 y todos los módulos HMI/FBD/Ladder.
+- Los nuevos códigos Arduino usan 250 ms de estado periódico y respuesta inmediata ante cambios.
+- Caché PWA renovada a V36.
