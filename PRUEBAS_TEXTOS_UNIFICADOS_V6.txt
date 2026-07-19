@@ -1,0 +1,26 @@
+PRUEBAS REALIZADAS - SIMUPLC TEXTOS UNIFICADOS V6
+
+1. Validación JavaScript
+- index.html: 87 bloques JavaScript, 0 errores de sintaxis.
+- ladder_mobile_compact.html: 37 bloques JavaScript, 0 errores de sintaxis.
+
+2. Texto libre FBD
+- Abre desde el botón Aa.
+- Muestra formato, fuente, tamaños, ancho, negrita y cursiva.
+- Muestra 9 colores de texto y 9 fondos, incluido Sin fondo.
+- Guarda y restaura formato, posición y estilos dentro del proyecto.
+
+3. Texto libre Ladder
+- Abre desde el botón Aa.
+- Muestra las mismas opciones que FBD.
+- Guarda color exacto, fondo transparente, formato y dimensiones.
+
+4. Texto asociado a elementos
+- Ladder y FBD incluyen Comentario PLC, Título y Texto simple.
+- Paletas predefinidas para texto y fondo.
+- Opción Sin fondo.
+- Fuente, tamaño, ancho, negrita y cursiva.
+- Propiedades verificadas en el modelo guardado.
+
+5. PWA
+- Caché actualizado a simuplc-textos-unificados-v6.

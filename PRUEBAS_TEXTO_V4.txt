@@ -1,0 +1,12 @@
+PRUEBAS REALIZADAS – TEXTO V4
+
+- Validación sintáctica de 86 scripts en index.html: 0 errores.
+- Validación sintáctica de 36 scripts en ladder_mobile_compact.html: 0 errores.
+- FBD: creación de texto libre desde Aa.
+- FBD: movimiento real mediante Pointer Events.
+- FBD: selección y edición posterior con el botón Editar.
+- Ladder: creación inmediata desde Aa y apertura del editor de propiedades.
+- Ladder: guardado del texto libre en el modelo.
+- Ladder: escalado comprobado de 100% a 150%.
+- Ladder: selección y movimiento comprobados después del zoom.
+- Ladder: texto asociado comprobado a 100% y 60%; tamaño y zona seleccionable permanecen sincronizados.

@@ -1,0 +1,20 @@
+ACTUALIZACIÓN A V15
+
+Sube el contenido completo de esta carpeta a la raíz de tu repositorio.
+
+Archivos principales que deben reemplazarse:
+- index.html
+- service-worker.js
+- assets/js/hmi-codegen-v15.js
+- hardware/PRUEBA_TANQUE_MOTOR_HMI_V15.ino
+- GUIA_SENSORES_FISICO_HMI_V15.md
+
+Elimina del repositorio si todavía existe:
+- assets/js/hmi-codegen-v14.js
+
+Después de publicar:
+1. Cierra la PWA.
+2. Borra los datos del sitio o desinstala la versión anterior.
+3. Abre nuevamente la URL publicada.
+4. Recarga e instala otra vez la PWA.
+5. El código generado debe mostrar SIMUPLC HMI READY CODE V15.

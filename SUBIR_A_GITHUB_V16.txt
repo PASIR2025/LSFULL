@@ -1,0 +1,8 @@
+SUBIR SIMUPLC V16 A GITHUB
+
+1. Reemplaza todo el contenido del repositorio por los archivos de esta carpeta.
+2. Confirma que estén index.html, service-worker.js y assets/js/hmi-codegen-v16.js.
+3. El archivo assets/js/hmi-codegen-v15.js ya no se utiliza.
+4. Publica los cambios.
+5. En el navegador o PWA, borra los datos anteriores o reinstala la aplicación para eliminar la caché V15.
+6. El código generado debe indicar SIMUPLC HMI READY CODE V16.

@@ -1,0 +1,16 @@
+SUBIR SIMUPLC V19 A GITHUB
+
+1. Descomprime el ZIP.
+2. Sube el CONTENIDO de la carpeta SimuPLC-HMI-Profesional-V19 a la raíz del repositorio.
+3. Reemplaza todos los archivos existentes.
+4. Verifica especialmente:
+   - index.html
+   - service-worker.js
+   - diagnostico_usb_android.html
+   - assets/js/webusb-serial-v19.js
+5. Elimina del repositorio:
+   - assets/js/webusb-serial-v18.js
+6. Después de publicar, borra los datos del sitio/PWA en el celular o tablet.
+7. Abre de nuevo la página por HTTPS.
+
+No es obligatorio volver a cargar el Arduino si ya tiene el código HMI V17 funcional.

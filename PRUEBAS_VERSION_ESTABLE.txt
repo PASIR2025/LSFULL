@@ -1,0 +1,12 @@
+PRUEBAS REALIZADAS
+
+- Validación de sintaxis de los 85 bloques JavaScript internos de index.html: CORRECTO.
+- Validación de sintaxis de los 34 bloques JavaScript internos de Ladder: CORRECTO.
+- Validación de sintaxis de service-worker.js: CORRECTO.
+- Comprobación de rutas locales src/href/url: 0 archivos faltantes.
+- Carga de la interfaz FBD en navegador Chromium: CORRECTO.
+- Carga de la interfaz Ladder en navegador Chromium: CORRECTO.
+- Creación de bloques Entrada, AND y Salida: CORRECTO.
+- Renderizado de etiqueta personalizada I/Q: CORRECTO.
+- Serialización, limpieza y restauración de un proyecto FBD: CORRECTO.
+- Verificación de funciones loadFromData, serialize y exportSimuPLCPNG: DISPONIBLES.
