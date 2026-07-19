@@ -1,0 +1,8 @@
+SIMUPLC HMI PROFESIONAL V39
+
+- Android Chrome 148+ usa Web Serial nativo en el modo automático.
+- WebUSB V19 queda como respaldo manual.
+- Eliminado el bucle continuo de GET_STATE.
+- SET se transmite directamente y solo se consulta estado si no llega respuesta.
+- Heartbeat silencioso mientras el Arduino envía datos.
+- Caché PWA V39 independiente.

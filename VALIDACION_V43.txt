@@ -1,0 +1,15 @@
+VALIDACION ESTATICA V43
+
+- index.html: 96 bloques JavaScript revisados con node --check, sin errores de sintaxis.
+- hmi-global-control-v23.js: sintaxis JavaScript correcta.
+- service-worker.js: sintaxis JavaScript correcta.
+- APP_SHELL: todas las rutas declaradas existen.
+- Prueba automatizada del actualizador de código:
+  * READY CODE V18 -> READY CODE V23: correcto.
+  * Solo HMI -> HMI_DEFAULT_CONTROL_MODE=1: correcto.
+  * hmiInputSource antiguo eliminado: correcto.
+  * HELLO inicia el scan: correcto.
+  * SET inicia el scan si no hubo STOP: correcto.
+  * STOP explícito se conserva: correcto.
+
+La validación física final requiere Arduino Uno y dispositivo Android.
