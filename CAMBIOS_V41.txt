@@ -1,3 +1,0 @@
-SIMUPLC HMI V41 - USB ANDROID ESTABLE
-
-RX CDC por stream de bytes. Android usa WebUSB automático. Código Arduino generado con TX STATE no bloqueante.
