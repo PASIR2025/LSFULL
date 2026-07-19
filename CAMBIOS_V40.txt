@@ -1,0 +1,11 @@
+SIMUPLC HMI PROFESIONAL V40
+
+- WebUSB Android V20: lectura de un solo paquete CDC por vez (64 bytes).
+- Cola de lectura con backpressure para evitar bloquear transferencias de salida.
+- Recuperación automática de endpoints USB IN/OUT si entran en estado halt.
+- Keepalive PING cada 1.2 s mientras Operación está activa.
+- Evita que el Arduino se detenga tras 3-5 segundos sin comandos.
+- Timeout predeterminado de código generado aumentado a 15 s.
+- Estados periódicos reducidos a 1 s; los cambios siguen enviándose inmediatamente.
+- Caché PWA V40 y nuevo archivo webusb-serial-v20.js.
+- Prueba exacta incluida: hardware/PRUEBA_ANDROID_I1_Q1_V40.ino.
