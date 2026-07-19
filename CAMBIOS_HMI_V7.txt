@@ -1,1 +1,0 @@
-HMI V7: tanque acepta varias bombas y valvulas por lista de tags, barra lateral para subir/bajar nivel manualmente, y tamano rapido para elementos (muy pequeno a muy grande).
