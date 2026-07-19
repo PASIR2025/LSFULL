@@ -1,6 +1,0 @@
-SIMUPLC MOBILE FIX V9
-
-Corrección puntual:
-- El texto libre insertado con el botón Aa en el editor FBD vuelve a poder seleccionarse y arrastrarse con mouse, lápiz o dedo.
-- Se eliminó la interferencia de un listener táctil en fase de captura que bloqueaba el controlador real del texto libre.
-- No se modificó el comportamiento de Ladder ni de los textos asociados a bloques.
