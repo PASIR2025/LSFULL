@@ -1,9 +1,0 @@
-SIMUPLC MOBILE FIX V7
-
-- El panel de edición Ladder ahora permite desplazarse verticalmente en celular y tablet hasta los botones Guardar/Cancelar.
-- El texto libre Ladder puede seleccionarse y arrastrarse táctilmente con prioridad sobre el lienzo.
-- Los textos asociados Ladder conservan su movimiento independiente.
-- En FBD, los textos libres y asociados capturan primero el gesto táctil, evitando mover accidentalmente el bloque.
-- El texto asociado FBD se mueve de forma independiente y continúa siguiendo al bloque cuando este se desplaza.
-- Se mantiene estable la selección del bloque después de mover textos.
-- Se agregaron ajustes de scroll y áreas seguras para formularios móviles.
