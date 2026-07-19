@@ -1,0 +1,19 @@
+VERIFICACIÓN SIMUPLC V41.2
+
+- Sintaxis de 93 scripts JavaScript internos: CORRECTA.
+- Inicialización de window.SimuPLCHMI: CORRECTA.
+- Inicialización de window.SimuPLCHMIPlan: CORRECTA.
+- Indicador HMI FREE sin licencia: CORRECTO.
+- Límite de 2 tanques: CORRECTO.
+- Bloqueo de tercer tanque: CORRECTO.
+- Bloqueo de elementos Pro en Free: CORRECTO.
+- Plantillas Free: CORRECTAS.
+- Plantillas Pro bloqueadas en Free: CORRECTO.
+- Proyecto Pro importado: CONSERVADO Y BLOQUEADO EN SOLO LECTURA.
+- Activación Pro mediante logicsoft_full_v1: CORRECTA.
+- Desbloqueo de elementos Pro: CORRECTO.
+- Límite de 3 pulsadores NO: CORRECTO.
+- Límite de 2 pulsadores NC: CORRECTO.
+- Archivo webusb-serial-v21.js: SIN CAMBIOS.
+- Archivo hmi-global-control-v23.js: SIN CAMBIOS.
+- Archivo hmi-codegen-v18.js: SIN CAMBIOS.

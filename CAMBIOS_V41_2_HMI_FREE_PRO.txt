@@ -1,0 +1,15 @@
+SIMUPLC HMI V41.2 — CAMBIOS FREE / PRO
+
+1. Se reutiliza la misma API de Google Apps Script existente.
+2. Toda licencia válida con status OK activa HMI Pro.
+3. Sin licencia válida, HMI funciona en modo Free con límites.
+4. HMI Free permite arranque directo, inversión de giro, estrella-triángulo y procesos con hasta dos tanques.
+5. Se agregaron límites por tipo de elemento y un límite total de 20 elementos funcionales.
+6. Los elementos avanzados permanecen visibles con distintivo PRO.
+7. Las plantillas avanzadas están marcadas como PRO.
+8. Al alcanzar un límite, no se agrega el elemento y se abre la activación Pro.
+9. Los proyectos Pro se conservan y abren en solo lectura cuando no hay licencia.
+10. Al activar la licencia Pro, el HMI se desbloquea sin recargar el proyecto.
+11. Se agregó indicador HMI FREE / HMI PRO en la barra del HMI.
+12. Se actualizó la caché PWA para publicar los cambios.
+13. No se modificó ningún archivo de comunicación USB, OTG, Web Serial, WebUSB o Wi-Fi.

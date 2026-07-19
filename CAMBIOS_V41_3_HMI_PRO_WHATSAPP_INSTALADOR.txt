@@ -1,0 +1,8 @@
+SIMUPLC V41.3 - CAMBIOS
+
+1. Al activar PRO desaparecen las etiquetas visuales PRO de los elementos HMI.
+2. Al activar PRO desaparecen los candados y el texto PRO de las plantillas HMI.
+3. El botón de compra abre WhatsApp al +51 925 698 650 con un mensaje prellenado.
+4. Se mantiene la misma API de Apps Script y el mismo sistema de activación.
+5. instalarpc.html registra el service worker, detecta instalación y abre el prompt PWA desde el botón Instalar ahora.
+6. No se modificó la comunicación USB/Web Serial/WebUSB ni el generador HMI-Arduino.

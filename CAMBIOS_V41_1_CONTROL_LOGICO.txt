@@ -1,0 +1,23 @@
+SimuPLC HMI V41.1 - CONTROL LOGICO CORREGIDO
+
+Base: V41 Android USB Estable confirmada funcional por el usuario.
+
+IMPORTANTE
+- No se modificó webusb-serial-v21.js.
+- No se modificaron Web Serial, WebUSB, USB OTG, baud rate, apertura/cierre del puerto ni detección del Arduino.
+
+CORRECCIONES
+1. El actualizador del generador ahora reconoce READY CODE V18. Antes ignoraba V18, por eso Solo HMI, Solo físico y Ambos podían generar prácticamente el mismo comportamiento.
+2. El código generado queda identificado como SIMUPLC HMI READY CODE V23.
+3. Clasificación NC reforzada usando el elemento HMI: STOP, PARADA, EMERGENCIA, ESTOP, guardamotor, protección, térmico y sobrecarga.
+4. Control HMI:
+   - Entradas NO de mando: solo HMI.
+   - Entradas NC de seguridad: físico Y HMI, de modo que cualquiera puede detener.
+5. Control físico:
+   - Solo entradas físicas.
+   - Los controles HMI quedan bloqueados y solo muestran estado.
+6. HMI + físico:
+   - Contacto NO: físico O HMI.
+   - Contacto NC: físico Y HMI; cualquiera que abra detiene.
+7. El modo seleccionado se sincroniza siempre al conectar, incluido AMBOS.
+8. Nueva caché PWA para evitar cargar la lógica anterior.
