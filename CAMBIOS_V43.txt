@@ -1,0 +1,12 @@
+SIMUPLC HMI PROFESIONAL V43
+
+- Android con Chrome compatible usa obligatoriamente Web Serial nativo.
+- La seleccion WebUSB guardada por versiones anteriores se migra automaticamente.
+- Se elimina la mezcla de scripts v40/v42 mediante cache unificada v43.
+- El generador HMI V43 externo queda cargado realmente en index.html.
+- El codigo Arduino generado incluye ACK para SET, RUN y MODE.
+- La app procesa ACK y tambien acepta STATE como confirmacion compatible.
+- Los comandos se muestran en el registro solo despues de completar la escritura.
+- SET, RUN y MODE se reintentan una sola vez si Arduino no confirma.
+- El modo inicial se define al generar; HMI/FISICO/AMBOS puede cambiarse en operacion.
+- Se conserva WebUSB solo para navegadores Android antiguos sin Web Serial.
