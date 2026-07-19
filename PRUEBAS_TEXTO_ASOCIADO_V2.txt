@@ -1,0 +1,24 @@
+PRUEBAS REALIZADAS - SIMUPLC TEXTO ASOCIADO V2
+
+FBD
+- Botón Aa ubicado dentro de la barra superior.
+- Creación de texto libre.
+- Guardado de descripción asociada a un bloque de entrada.
+- Visualización inmediata del texto.
+- Movimiento independiente del texto sin mover el bloque.
+- Persistencia de texto y posición al exportar/importar el estado.
+- Sin errores JavaScript durante las pruebas.
+
+LADDER
+- Botón Aa ubicado junto a los botones de edición.
+- Eliminada la copia inferior de la biblioteca.
+- Guardado de descripción asociada a contacto.
+- Dibujo del texto en el lienzo Ladder PRO.
+- Selección y movimiento independiente del texto.
+- El contacto permanece en su posición durante el movimiento del texto.
+- Persistencia de descripción y desplazamiento en el JSON.
+- Al eliminar el texto seleccionado, el elemento eléctrico no se elimina.
+- Sin errores JavaScript durante las pruebas.
+
+PWA
+- Caché actualizado a v12 para forzar la carga de la nueva versión.

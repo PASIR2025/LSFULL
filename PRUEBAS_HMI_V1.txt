@@ -1,0 +1,14 @@
+PRUEBAS REALIZADAS — SIMUPLC HMI V1
+
+1. Carga del editor HMI y cambio FBD/Ladder/HMI: CORRECTO.
+2. Plantilla de arranque/parada: 7 objetos cargados: CORRECTO.
+3. Movimiento de objetos en modo Diseño: CORRECTO.
+4. Edición de nombre, tag, tamaño, posición y color: CORRECTO.
+5. Agregar y duplicar componentes: CORRECTO.
+6. Modo Operación responsive en escritorio y celular: CORRECTO.
+7. Puente HMI → FBD: I1 activa la lógica y Q1 retorna al HMI: CORRECTO.
+8. Puente por postMessage HMI ↔ Ladder: comandos y estados recibidos: CORRECTO.
+9. Guardado unificado incluye editors.hmi: CORRECTO.
+10. Restauración del proyecto HMI: CORRECTO.
+11. Validación sintáctica de 89 scripts de index.html: SIN ERRORES.
+12. Validación sintáctica de 39 scripts de Ladder: SIN ERRORES.

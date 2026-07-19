@@ -1,0 +1,2 @@
+Sube TODO el contenido de la carpeta SimuPLC-HMI-Profesional-V24 a la raíz del repositorio.
+Después borra datos/caché de la PWA o reinstálala para cargar el nuevo Service Worker V24.

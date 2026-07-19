@@ -1,0 +1,9 @@
+SIMUPLC HMI PROFESIONAL V13
+- Detección automática de velocidad USB 115200/9600/57600/230400.
+- La conexión no se declara lista hasta recibir OK, PONG, STATE o RUNNING válidos.
+- Espera el reinicio del Arduino después de abrir el puerto.
+- Sincroniza entradas HMI, envía RUN y solicita STATE automáticamente.
+- El HMI mantiene una simulación local espejo y usa los estados reales del Arduino cuando el protocolo está listo.
+- Las entradas físicas recibidas se reflejan también en el editor FBD/Ladder.
+- El generador usa USB/OTG como opción predeterminada y genera código READY CODE V13.
+- La velocidad elegida en el generador se sincroniza con la pantalla de conexión.

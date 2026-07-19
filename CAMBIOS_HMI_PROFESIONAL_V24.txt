@@ -1,0 +1,12 @@
+SIMUPLC HMI PROFESIONAL V24
+
+- Nuevo sensor universal compacto, libre y con nombre/variable configurables.
+- El sensor universal puede colocarse en cualquier parte del proceso y detectar cajas por proximidad.
+- Corrección de simulación de cilindros: extensión, retracción, estados intermedios y finales I.
+- Los elementos pueden moverse durante Operación sin detener el proceso.
+- Toque corto acciona controles; arrastre mueve el elemento.
+- El botón Operación inicia y finaliza la simulación.
+- Se eliminó el botón Iniciar duplicado.
+- Detener fue reemplazado por Pausa / Continuar.
+- Al finalizar operación o entrar a Diseño, los cilindros regresan a retraído.
+- Se conservan sensores de banda, rotación, capas, zoom, responsive y comunicación Arduino.

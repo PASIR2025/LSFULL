@@ -1,0 +1,17 @@
+ICONOS AGREGADOS AL TOPBAR
+
+Guarda o reemplaza tus iconos en esta carpeta:
+
+icons/icon-fbd.svg
+icons/icon-ladder.svg
+icons/icon-clean-sim.svg
+
+Puedes usar SVG o PNG. Si usas PNG, cambia la extension dentro del index.html o conserva el mismo nombre SVG exportando tus iconos como SVG.
+
+Archivos principales para GitHub Pages/PWA:
+index.html
+ladder_mobile_compact.html
+manifest.json
+service-worker.js
+.nojekyll
+icons/

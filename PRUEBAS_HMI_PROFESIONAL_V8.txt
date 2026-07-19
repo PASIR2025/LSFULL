@@ -1,0 +1,21 @@
+PRUEBAS HMI PROFESIONAL V8
+
+- Validación de sintaxis de 91 bloques JavaScript: OK.
+- Inicio completo del módulo window.SimuPLCHMI: OK.
+- Cambio de vista KOP/FBD/HMI: OK.
+- Propiedades ocultas sin selección: OK.
+- Propiedades específicas para tanque, bomba y pulsador: OK.
+- Selección y deselección en zona vacía: OK.
+- Redimensionamiento proporcional de bomba desde esquina: OK.
+- Pulsador circular después de redimensionar: OK.
+- Barra manual del tanque con Pointer Events: OK.
+- Nivel limitado a 0-100 %: OK.
+- Modo automático/manual y persistencia: OK.
+- Guardado/carga de fillSpeed, drainSpeed, tankMode y nivel: OK.
+- Inicio doble sin intervalos duplicados: OK.
+- Detención central y clase visual sim-stopped: OK.
+- Pantalla completa HMI y restauración de menús: OK.
+- Escritorio 1366x768: lienzo 75 % con propiedades abiertas.
+- Celular 390x844: biblioteca flotante, propiedades superpuestas y lienzo desplazable.
+- Errores de ejecución del módulo HMI durante pruebas: 0.
+- Integridad ZIP: verificada.

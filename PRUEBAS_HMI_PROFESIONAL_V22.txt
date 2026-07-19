@@ -1,0 +1,34 @@
+PRUEBAS REALIZADAS — SIMUPLC HMI V22
+
+1. Sintaxis
+- 92 scripts internos de index.html: OK.
+- 40 scripts internos de ladder_mobile_compact.html: OK.
+- Scripts de diagnóstico/instalación: OK.
+- assets/js/hmi-codegen-v17.js: OK.
+- assets/js/hmi-global-control-v22.js: OK.
+- assets/js/webusb-serial-v19.js: OK.
+- service-worker.js: OK.
+
+2. Archivos y publicación
+- Referencias locales HTML: OK.
+- Archivos del APP_SHELL del Service Worker: OK.
+- Controlador WebUSB Android V19 conservado: OK.
+- Generador/protocolo Arduino V21 conservado: OK.
+
+3. Prueba funcional en Chromium
+- Carga de plantilla Banda + expulsor neumático: OK.
+- Render de banda, caja, sensor fotoeléctrico, cilindro y electroválvula: OK.
+- Seleccionar/mover no abre automáticamente el panel: OK.
+- Botón flotante Ajustes abre las propiedades: OK.
+- Zoom mediante rueda del mouse: OK.
+- Zoom mediante gesto simulado de dos dedos: OK.
+- Propiedades de velocidad, sentido y posición del movimiento: OK.
+- Caja desplazada por Q1: OK.
+- Sensor fotoeléctrico genera I3 al detectar la caja: OK.
+- Cilindro desplazado por Q2 y generación de I4/I5: OK.
+- Cilindro empuja la caja: OK.
+- Piloto apagado conserva una tonalidad oscura de su color: OK.
+- Vista HMI a 390 × 844 px y controles de zoom visibles: OK.
+
+4. Limitación de validación
+La conexión con una placa, contactores, electroválvulas y sensores físicos debe probarse en el módulo real. La actualización conserva sin cambios el transporte USB/OTG que funcionaba en V21.

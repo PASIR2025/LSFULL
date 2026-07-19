@@ -1,0 +1,18 @@
+SIMUPLC HMI PROFESIONAL V25
+
+MEJORAS PRINCIPALES
+- Renovación visual temporal del editor HMI: barra superior, biblioteca, paneles, área de trabajo y controles.
+- Área de trabajo más limpia, con cuadrícula industrial más suave y mejor contraste.
+- Botones y estados de Diseño, Operación y Pausa con jerarquía visual más clara.
+- Biblioteca de componentes más legible y cómoda en PC y móvil.
+- Cilindro neumático rediseñado con cuerpo, tapas, puertos, vástago y cabezal móvil.
+- Corrección de la fórmula CSS incompatible que impedía visualizar correctamente el desplazamiento.
+- Animación progresiva del vástago al extender y retraer.
+- Estado del cilindro muestra porcentaje durante el recorrido.
+- Indicadores visuales diferentes para extensión, retracción, posición final y falla doble.
+- Actualización del ciclo visual de 50 ms a 33 ms para mayor fluidez.
+- Caché PWA actualizada a V25 para forzar la descarga de la versión nueva.
+
+COMPATIBILIDAD
+- Conserva los proyectos HMI anteriores guardados.
+- Mantiene FBD, Ladder, Arduino, ESP32, USB/OTG y WebSocket existentes.

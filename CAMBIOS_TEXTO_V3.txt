@@ -1,0 +1,12 @@
+SIMUPLC - CORRECCIÓN DE TEXTOS V3
+
+1. Botón Aa superior funcional en FBD y Ladder.
+2. Texto libre FBD aparece en el centro del área actualmente visible.
+3. Texto libre FBD permite fuente, tamaño, color y fondo.
+4. Texto libre Ladder permite fuente, tamaño, color y fondo.
+5. Textos asociados FBD y Ladder permiten fuente, tamaño, color y fondo.
+6. Textos asociados se muestran dentro de un cuadro industrial.
+7. Los textos asociados se pueden seleccionar, editar y mover independientemente.
+8. FBD guarda y recupera textos libres, textos asociados, posición y estilo dentro del JSON.
+9. Ladder conserva sus textos y estilos dentro del JSON.
+10. Se actualizó el caché PWA.

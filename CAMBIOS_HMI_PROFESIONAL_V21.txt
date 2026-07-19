@@ -1,0 +1,32 @@
+SIMUPLC HMI PROFESIONAL V21
+
+BASE
+- Construida sobre la V19 estable.
+- Se conservan Web Serial, WebUSB Android, CH340/CH341, CP210x, FTDI y CDC.
+
+MODO GLOBAL
+- Un solo selector para todo el proyecto: SOLO HMI, SOLO FÍSICO o AMBOS.
+- No se requiere configurar cada entrada individualmente.
+- AMBOS conserva la filosofía V19: NO=OR, NC=AND.
+- El modo puede cambiarse desde el HMI mientras Arduino está conectado.
+- El generador integra el modo inicial en el archivo .ino.
+
+COMUNICACIÓN
+- Scan inmediato después de SET, MODE, RUN y GET_STATE.
+- STATE inmediato al cambiar entradas o salidas.
+- Refresco de respaldo: 50 ms.
+- Antirrebote físico: 20 ms.
+- Se evita solicitar GET_STATE cuando Arduino ya respondió.
+
+VISUALIZACIÓN FÍSICA
+- En SOLO FÍSICO, los mandos HMI quedan en lectura.
+- Pulsadores NO/NC, emergencia, sensores y selectores reflejan el estado físico.
+- Motores, bombas, válvulas, pilotos y tanque usan las salidas reales de Arduino.
+- El HMI muestra el proceso externo aunque la simulación local no haya sido iniciada manualmente.
+
+RESPONSIVE
+- Barra HMI desplazable horizontalmente en pantallas pequeñas.
+- Controles táctiles de 40 px.
+- Altura dinámica 100dvh.
+- Paneles y lienzo adaptados a PC, tablet y celular.
+- Se ocultaron botones duplicados o innecesarios según el modo de operación.

@@ -1,0 +1,10 @@
+SIMUPLC HMI PROFESIONAL V10
+
+- La bomba gira solamente mediante su impulsor interno cuando la salida está activa.
+- El motor tiene rotor circular alineado con el extremo del eje.
+- Giro derecho y giro izquierdo usan animaciones opuestas.
+- Estrella y triángulo mantienen el motor girando con diferenciación visual de velocidad.
+- Una condición inválida de inversión o estrella-triángulo detiene el rotor y muestra falla.
+- Manipular la barra del tanque oculta el panel contextual y no selecciona el tanque.
+- La válvula anterior fue reemplazada por una válvula de compuerta industrial proporcional.
+- Se mantienen guardado, carga, Ladder, FBD, selector, tanque híbrido y funcionamiento táctil.

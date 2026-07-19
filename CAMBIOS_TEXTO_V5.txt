@@ -1,0 +1,18 @@
+SIMUPLC - CORRECCIÓN DE TEXTOS V5
+Fecha: 13 de julio de 2026
+
+1. BOTÓN Aa EN LADDER
+- El botón Aa de la barra principal se comunica con el iframe Ladder mediante un mecanismo compatible con navegador, archivo local y PWA.
+- Al pulsarlo se crea un texto libre en la zona visible y se abre inmediatamente la ventana de edición.
+- Se evita crear dos textos cuando el iframe comparte el mismo origen.
+
+2. GUARDADO Y APERTURA FBD
+- Se corrigió el serializador FBD canónico que reemplazaba a los guardados anteriores y eliminaba la documentación.
+- Ahora guarda textos libres y referencias asociadas a los elementos.
+- Conserva texto, posición, desplazamiento, fuente, tamaño, color y fondo.
+- Al abrir un circuito, reconstruye las referencias asociadas y los textos libres.
+
+3. COMPATIBILIDAD
+- Se mantiene la carga de proyectos anteriores sin textos.
+- Ladder conserva su sistema de guardado actual.
+- Se actualizó la versión de caché del Service Worker.

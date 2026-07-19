@@ -1,0 +1,32 @@
+SIMUPLC HMI V1 — EDITOR HMI EN SIMULACIÓN
+
+NUEVO EDITOR
+- Se agregó una tercera vista superior: FBD | LADDER | HMI.
+- El HMI trabaja con las mismas variables del programa PLC.
+- Se puede seleccionar como fuente el programa FBD o Ladder.
+
+PLANTILLA INCLUIDA
+- Arranque y parada de Motor 1.
+- Pulsador MARCHA vinculado a I1.
+- Pulsador PARADA vinculado a I2.
+- Motor, piloto de marcha y estado vinculados a Q1.
+- Piloto de motor detenido vinculado al estado invertido !Q1.
+- Monitor de variables I1, I2 y Q1 en tiempo real.
+
+MODO DISEÑO
+- Agregar pulsador, piloto, motor y texto.
+- Seleccionar y arrastrar objetos.
+- Editar nombre, variable PLC, posición, tamaño y color industrial.
+- Duplicar o eliminar objetos.
+- Aplicar la plantilla de motor o iniciar una pantalla en blanco.
+
+MODO OPERACIÓN
+- Pulsadores momentáneos táctiles y con mouse.
+- Animación de motor y pilotos según Q1.
+- Inicio y detención de la simulación desde el HMI.
+- Compatible con FBD y Ladder mediante un puente interno de variables.
+
+GUARDADO
+- El diseño HMI se guarda junto con FBD y Ladder en el proyecto unificado.
+- Se conservan posiciones, tamaños, colores, textos y variables vinculadas.
+- Se actualizó el caché PWA a SimuPLC HMI V1.

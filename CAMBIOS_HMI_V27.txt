@@ -1,0 +1,47 @@
+SIMUPLC HMI PROFESIONAL V27
+===========================
+
+1. TRANSFERENCIA ENTRE BANDAS
+- Cada caja es tomada por la banda activa más cercana a la superficie real de transporte.
+- La banda anterior deja de arrastrar la caja cuando un pistón la desplaza hacia otra banda.
+- Se redujo el alcance lateral de arrastre casi al ras de la banda para evitar conflictos entre bandas cercanas.
+- Se mantiene el funcionamiento con bandas de izquierda a derecha, derecha a izquierda y bandas rotadas.
+
+2. PARADA TOTAL
+- Detener bloquea inmediatamente el ciclo del HMI y cualquier estado externo obsoleto.
+- Se limpian entradas automáticas generadas por sensores, tanques, cilindros y bandas.
+- Se apagan salidas visuales y colores activos.
+- Ningún sensor queda encendido visualmente después de detener.
+- La simulación Ladder/FBD y el controlador externo reciben la orden de parada.
+
+3. TEXTOS DE ESTADO
+- Cada elemento permite ocultar textos como DETENIDO, EXTENDIDO, RETRAÍDO, POS 1, CENTRO y otros estados.
+- Nueva opción: "Mostrar texto de estado" en Propiedades.
+
+4. NOMBRE INDEPENDIENTE
+- El nombre del componente se puede arrastrar directamente en modo Diseño sin mover el componente.
+- Se agregaron desplazamiento X/Y del nombre.
+- Se agregó giro independiente del nombre en 0°, 90°, 180° y 270°.
+- Se agregó botón para centrar/restablecer el nombre.
+
+5. VARIABLES ACTIVAS
+- Las etiquetas I y Q cambian a verde con resplandor cuando su variable está activa.
+- Al detener, todas las etiquetas vuelven al estado inactivo.
+
+6. PISTONES
+- Q de extensión se muestra dentro del conjunto, próxima a la cámara de extensión.
+- Q de retracción se muestra dentro del conjunto, próxima al lado del vástago.
+- Los finales I retraído/extendido conservan su indicación visual.
+- Se mantiene el empuje según la orientación real del pistón.
+
+7. PWA
+- Caché actualizada a V27 para forzar la descarga del código nuevo.
+
+PRUEBAS REALIZADAS
+- Transferencia entre dos bandas cercanas: correcta.
+- Banda derecha a izquierda: correcta.
+- Parada total con estado externo obsoleto: correcta.
+- Pistón vertical empuja solamente en vertical: correcto.
+- Ocultar estado, color de Q y posición/giro de nombre: correcto.
+- Arrastre independiente del nombre: correcto.
+- 92 bloques JavaScript revisados sin errores de sintaxis.

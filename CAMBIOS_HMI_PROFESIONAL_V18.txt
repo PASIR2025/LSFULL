@@ -1,0 +1,14 @@
+SIMUPLC HMI PROFESIONAL V18 — USB/OTG ANDROID
+
+1. Se mantiene Web Serial para laptop y computadoras.
+2. Se agrega USB/OTG automático.
+3. Se agrega modo Web Serial explícito.
+4. Se agrega respaldo WebUSB Android para placas USB CDC compatibles.
+5. El panel muestra diagnóstico de Android, versión de Chrome, Web Serial, WebUSB y HTTPS.
+6. Cuando Chrome no encuentra puertos, aparece el botón “Probar WebUSB Android”.
+7. Se mejoran los mensajes para diferenciar: puerto no detectado, placa USB no CDC y protocolo HMI incorrecto.
+8. El generador HMI V17 y su protocolo SET/STATE siguen siendo compatibles; no se modifica la lógica PLC ya validada.
+9. Se actualiza el Service Worker para impedir que la tablet conserve el código V17 anterior.
+
+NOTA:
+WebUSB Android integrado trabaja con placas que exponen USB CDC-ACM. Algunos clones con CH340, CP210x o FTDI pueden necesitar Web Serial nativo de Chrome 148+ o conexión Wi-Fi con ESP32.

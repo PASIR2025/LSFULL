@@ -1,0 +1,20 @@
+SIMUPLC HMI PROFESIONAL V14
+
+CORRECCION PRINCIPAL
+- El generador HMI se integró directamente dentro de index.html para que no dependa de que un archivo JavaScript externo cargue correctamente.
+- Al seleccionar USB/OTG o Wi-Fi, el generador ya no puede devolver silenciosamente el código COMPACT sin protocolo.
+- Para comunicación HMI se fuerza el motor PLC completo y se añade el protocolo SET/STATE.
+- El código generado incluye obligatoriamente la marca: SIMUPLC HMI READY CODE V14.
+- Si la integración falla, el generador muestra #error en lugar de entregar un código físico incompatible.
+
+COMUNICACION
+- Velocidad USB inicial migrada automáticamente a 115200 baudios.
+- Se conserva detección automática de velocidad.
+- Handshake: HELLO,SIMUPLC,1 -> OK,SIMUPLC,READY_CODE_V14,1.
+- Entradas HMI y físicas se combinan según Solo física / Solo HMI / OR / AND.
+- Las salidas reales recibidas por STATE actualizan motor, bomba, válvula y pilotos del HMI.
+- El editor FBD sigue recibiendo las entradas HMI mientras Arduino está conectado.
+
+CACHE/PWA
+- Nueva caché V14.
+- Navegación y archivos críticos usan estrategia network-first para reducir versiones antiguas retenidas.

@@ -1,0 +1,9 @@
+SIMUPLC HMI PROFESIONAL V15
+
+- El generador informa para cada entrada los estados efectivo, físico y HMI.
+- Nuevas opciones explícitas: Ambos — Físico O HMI y Ambos obligatorios — Físico Y HMI.
+- Los sensores del tanque se iluminan con la entrada efectiva recibida desde Arduino.
+- Si se activa un electronivel físico antes que el nivel virtual, el sensor HMI se muestra activo y señala FÍSICO.
+- Las salidas reales Q controlan motor, bomba, válvula y llenado/vaciado del tanque HMI.
+- El estado efectivo recibido se refleja también en FBD/Ladder.
+- Protocolo y generador actualizados a READY_CODE_V15.

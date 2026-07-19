@@ -1,0 +1,11 @@
+PRUEBAS V24
+
+1. Agregar Sensor universal y cambiar nombre/variable.
+2. Entrar a Operación: debe iniciar automáticamente.
+3. Mover sensor, caja, banda y cilindro mientras opera.
+4. Toque corto en pulsadores/sensores: debe accionar; arrastre: debe mover.
+5. Q extender activa: cilindro avanza y activa sensor extendido al final.
+6. Q retraer activa: cilindro regresa y activa sensor retraído.
+7. Pausa congela posiciones. Continuar reanuda.
+8. Finalizar operación detiene todo, vuelve a Diseño y retrae cilindros.
+9. Verificar conexión USB/OTG y modo global HMI/Físico/Ambos.

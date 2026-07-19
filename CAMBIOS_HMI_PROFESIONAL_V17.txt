@@ -1,0 +1,26 @@
+SIMUPLC HMI PROFESIONAL V17
+CORRECCIÓN: PULSADOR NO FÍSICO Y HMI INDEPENDIENTES
+
+1. Una entrada NO en modo "Físico + HMI" se genera obligatoriamente como OR:
+   I1 = I1_FISICA || I1_HMI;
+
+2. Una entrada NC en el mismo modo conserva la seguridad correcta:
+   I1 = I1_FISICA && I1_HMI;
+
+3. Se migran ajustes antiguos V15/V16 que podían dejar una entrada NO en AND.
+   Las opciones antiguas auto/or/and se convierten a modo DUAL según el contacto.
+
+4. El pulsador HMI mantiene su propio estado visual y ya no depende de que la
+   entrada física esté activa para poder presionarse.
+
+5. El HMI realiza una vista previa de la entrada efectiva mientras espera el
+   siguiente STATE del Arduino y solicita una actualización después de SET.
+
+6. El controlador no responde con un STATE antiguo inmediatamente después de SET;
+   primero se ejecuta el siguiente scan PLC y luego se informa el estado real.
+
+7. Se evita que varios objetos HMI con la misma etiqueta se sobrescriban durante
+   la sincronización inicial.
+
+8. El código nuevo se identifica con:
+   SIMUPLC HMI READY CODE V17

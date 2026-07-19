@@ -1,0 +1,1 @@
+HMI V5: tanque con sensor unico, electronivel de cisterna, paro de emergencia, boton para ocultar/mostrar menus y HMI a pantalla completa.

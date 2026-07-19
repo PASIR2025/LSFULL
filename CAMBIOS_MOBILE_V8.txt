@@ -1,0 +1,8 @@
+SIMUPLC MOBILE FIX V8
+
+1. El panel de edición Ladder ahora desplaza su propia tarjeta y permite llegar siempre al botón Guardar cambios.
+2. El botón Guardar queda fijo en la parte inferior durante el desplazamiento.
+3. El gesto táctil sobre textos libres Aa ya no es capturado por el desplazamiento del lienzo.
+4. Los textos libres usan coordenadas reales del circuito y se pueden mover con cualquier nivel de zoom.
+5. Los textos asociados también usan coordenadas reales y mantienen alineada su zona táctil al acercar o alejar.
+6. Se actualizó la caché PWA para forzar la carga de esta corrección.

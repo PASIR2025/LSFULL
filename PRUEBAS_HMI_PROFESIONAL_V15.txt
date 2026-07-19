@@ -1,0 +1,15 @@
+PRUEBAS REALIZADAS — SIMUPLC HMI V15
+
+1. Validación de 93 bloques JavaScript de index.html con node --check: OK.
+2. Validación de assets/js/hmi-codegen-v15.js: OK.
+3. Validación de service-worker.js: OK.
+4. Generación de código FBD de prueba con protocolo V15: OK.
+5. Compilación sintáctica C++ del código generado usando entorno Arduino simulado: OK.
+6. Protocolo STATE con I3 efectivo, I3_PHYSICAL e I3_HMI: OK.
+7. Parser de estado externo separa entradas físicas, HMI y efectivas: OK.
+8. El estado efectivo recibido se envía al editor FBD/Ladder: verificado en código.
+9. Motor, bomba, válvula y tanque leen salidas Q recibidas desde Arduino: verificado en integración HMI.
+10. Sensor de tanque usa la entrada efectiva cuando Arduino está conectado y muestra su origen: verificado en lógica.
+11. Integridad del ZIP: validada con zipfile.testzip y unzip -t.
+
+La prueba con contactor, motor y electronivel físico debe realizarse en el equipo del usuario.

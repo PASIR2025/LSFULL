@@ -1,0 +1,21 @@
+SIMUPLC HMI PROFESIONAL V8
+
+MEJORAS PRINCIPALES
+- Redimensionamiento proporcional desde las cuatro esquinas con controles táctiles.
+- Límites mínimos y máximos por tipo de componente.
+- Pulsadores circulares sin fondo gris; pulsador de emergencia industrial.
+- Bombas, motores, válvulas, pilotos y electroniveles con fondo transparente.
+- Electronivel metálico con indicador visual del punto de detección.
+- Tanque con modo Automático y Manual.
+- Barra vertical compacta compatible con Pointer Events y nivel de 0 a 100 %.
+- Varias bombas y válvulas mediante listas de variables, por ejemplo Q1,Q2.
+- Velocidades independientes de llenado y vaciado.
+- Lienzo HMI ampliado y adaptable a escritorio, tablet y celular.
+- Biblioteca compacta organizada por categorías y panel móvil desplegable.
+- Panel de propiedades contextual: solo aparece al seleccionar un elemento.
+- Navegación compacta KOP | FBD | HMI dentro del editor HMI.
+- Barra FBD global oculta dentro de la vista HMI.
+- Inicio de simulación protegido contra instancias duplicadas.
+- stopAllSimulations() centraliza la detención de HMI, Ladder y FBD.
+- Se cancelan intervalos, timeouts y animaciones registrados por el HMI.
+- Compatibilidad con proyectos HMI anteriores mediante normalización de propiedades.

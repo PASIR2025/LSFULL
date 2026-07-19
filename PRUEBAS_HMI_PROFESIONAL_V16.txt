@@ -1,0 +1,20 @@
+PRUEBAS V16
+
+1. CONTACTO NO
+- Configurar I1 como momentary-no.
+- Origen: Automático según contacto.
+- Resultado generado: I1_FISICA || I1_HMI.
+- Pulsar solo HMI: I1 efectiva = 1.
+- Pulsar solo físico: I1 efectiva = 1.
+- Sin pulsar ambos: I1 efectiva = 0.
+
+2. CONTACTO NC
+- Configurar I2 como momentary-nc.
+- Origen: Automático según contacto.
+- Resultado generado: I2_FISICA && I2_HMI.
+- En reposo ambos permiten la marcha.
+- Accionar el NC físico o el NC del HMI detiene.
+
+3. GENERADOR
+- El .ino contiene SIMUPLC HMI READY CODE V16.
+- El arreglo hmiInputSource usa 2 para NO y 3 para NC en modo Automático.

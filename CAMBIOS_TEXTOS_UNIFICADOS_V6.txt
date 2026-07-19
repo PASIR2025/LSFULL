@@ -1,0 +1,9 @@
+SIMUPLC - TEXTOS UNIFICADOS V6
+
+- Paletas industriales de colores predefinidos en Ladder y FBD.
+- Opción Sin fondo para textos libres y textos asociados.
+- Formulario de texto libre FBD igual al de Ladder.
+- Formato Comentario PLC, Título y Texto simple en referencias asociadas.
+- Fuentes, tamaños, anchos, negrita y cursiva en ambos editores.
+- Persistencia de todos los nuevos estilos en los proyectos FBD.
+- Caché PWA actualizado a V6.

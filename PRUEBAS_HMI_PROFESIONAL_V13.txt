@@ -1,0 +1,18 @@
+PRUEBAS SIMUPLC HMI PROFESIONAL V13
+
+1. Se validaron los 91 bloques JavaScript internos de index.html con node --check.
+2. Se validó assets/js/hmi-codegen-v13.js con node --check.
+3. Se probó el módulo USB con un puerto serial simulado:
+   - configuración guardada en 9600,
+   - controlador real simulado en 115200,
+   - detección automática de 115200,
+   - recepción de STATE,
+   - envío de RUN,1,
+   - envío SET,I1,1,
+   - recepción Q1=1.
+4. Se generaron ejemplos HMI para FBD y Ladder.
+5. El código generado incluye SIMUPLC HMI READY CODE V13, Serial.begin, SET/STATE y combinación Física O HMI.
+6. Los ejemplos FBD, Ladder USB y Ladder Wi-Fi compilaron con el entorno C++ de validación Arduino.
+7. hardware/PRUEBA_I1_Q1_HMI_V13.ino compiló correctamente.
+8. El HMI conserva el estado local FBD/Ladder hasta que el Arduino responde con un estado válido.
+9. Al recibir entradas externas, estas se reflejan en el editor local y el estado externo gobierna los actuadores HMI.

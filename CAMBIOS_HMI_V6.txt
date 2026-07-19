@@ -1,0 +1,1 @@
+HMI V6: valvula enlazada por Q2, tanque muestra solo entradas asignadas, sensores del tanque se ubican segun porcentaje, electroniveles rediseñados y paro de emergencia rediseñado como pulsador grande.

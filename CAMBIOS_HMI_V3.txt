@@ -1,0 +1,25 @@
+SIMUPLC HMI V3 — PULSADORES NO/NC Y NUEVAS PLANTILLAS
+
+1. Pulsadores HMI configurables
+- Contacto NO: reposo = 0, accionado = 1.
+- Contacto NC: reposo = 1, accionado = 0.
+- Acción momentánea o mantenida/selector.
+- El estado de reposo se envía automáticamente al PLC al entrar en Operación.
+- Los pulsadores STOP de la plantilla de motor vienen configurados como NC.
+
+2. Plantillas HMI incluidas
+- Arranque y parada de motor: I1 STOP NC, I2 START NO, Q1 MOTOR.
+- Llenado de tanque: I1 nivel bajo, I2 nivel alto, Q1 bomba.
+- Inversión de giro: I1 STOP NC, I2 derecha, I3 izquierda, Q1/Q2 contactores.
+- Estrella-triángulo: I1 STOP NC, I2 START, Q1 principal, Q2 estrella, Q3 triángulo.
+- Pantalla en blanco.
+
+3. Nuevos componentes HMI
+- Bomba industrial animada.
+- Tanque con nivel visual.
+- Motor con estado de giro derecha/izquierda y estrella/triángulo.
+
+4. Compatibilidad
+- Conserva proyectos HMI anteriores.
+- Los antiguos botones llamados STOP/PARADA sin tipo guardado se migran automáticamente a NC.
+- Caché PWA actualizado a HMI V3.

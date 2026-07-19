@@ -1,0 +1,20 @@
+PRUEBAS SIMUPLC HMI PROFESIONAL V19
+
+[OK] Sintaxis de 138 bloques/archivos JavaScript verificada con node --check.
+[OK] Controlador WebUSB V19 abre dispositivos simulados CDC-ACM.
+[OK] Controlador WebUSB V19 abre dispositivos simulados CH340/CH341.
+[OK] Controlador WebUSB V19 abre dispositivos simulados CP210x.
+[OK] Controlador WebUSB V19 abre dispositivos simulados FTDI.
+[OK] Escritura USB validada en los cuatro controladores simulados.
+[OK] Cierre de puerto validado en los cuatro controladores simulados.
+[OK] El modo Automático selecciona WebUSB directamente en Android.
+[OK] Existe selección filtrada de placas y opción “Mostrar todos los USB”.
+[OK] Página diagnostico_usb_android.html incluida y validada sintácticamente.
+[OK] Referencias locales de HTML verificadas: 0 archivos faltantes.
+[OK] Service Worker actualizado a caché V19 y controlador webusb-serial-v19.js.
+[OK] El controlador V18 fue retirado de la carpeta de producción.
+[OK] Protocolo HMI SET/STATE conservado; compatible con código Arduino V17.
+
+LIMITACIÓN DE VALIDACIÓN
+- No fue posible conectar físicamente la tablet, celular ni placa específica del usuario desde este entorno.
+- Las pruebas de controlador se realizaron con dispositivos USB simulados que reproducen interfaces, endpoints y transferencias de cada familia.

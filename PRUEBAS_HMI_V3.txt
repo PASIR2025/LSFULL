@@ -1,0 +1,11 @@
+PRUEBAS REALIZADAS — SIMUPLC HMI V3
+
+- Validación sintáctica de los 91 bloques JavaScript de index.html: sin errores.
+- Plantilla de arranque: STOP I1 NC (reposo 1 / presionado 0).
+- Plantilla de arranque: START I2 NO (reposo 0 / presionado 1).
+- Migración de botones antiguos STOP/PARADA a contacto NC.
+- Plantilla de tanque: incluye tanque, bomba y electroniveles mantenidos.
+- Plantilla de inversión: motor enlazado con Q1 y Q2.
+- Plantilla estrella-triángulo: motor enlazado con Q1, Q2 y Q3.
+- Verificación de IDs y opciones del formulario HMI.
+- Verificación de integridad ZIP mediante zipfile.testzip y unzip -t.

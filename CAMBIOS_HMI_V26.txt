@@ -1,0 +1,22 @@
+SIMUPLC HMI PROFESIONAL V26
+
+1. EMPUJE CORREGIDO SEGÚN ORIENTACIÓN DEL CILINDRO
+- El cilindro vertical empuja en vertical.
+- El cilindro horizontal empuja en horizontal.
+- La dirección también respeta giros de 90°, 180° y 270°.
+- El cilindro empuja la caja únicamente al extenderse; al retraerse no la arrastra.
+- La detección de contacto usa el eje real del vástago y una zona de contacto más precisa.
+
+2. PANEL DE PROPIEDADES FLOTANTE
+- Seleccionar un objeto ya no reduce el ancho del área de trabajo.
+- El panel aparece sobre el lado derecho como ventana flotante.
+- Se añadió cierre funcional mediante el botón X.
+
+3. SELECCIÓN MÁS PRECISA
+- Los espacios transparentes del contenedor ya no seleccionan el componente.
+- Solo el símbolo visible, su etiqueta o su indicador capturan el clic.
+- El marco azul se ajusta al área visual útil del componente.
+- Los tiradores de tamaño permanecen disponibles.
+
+4. PWA
+- Caché actualizada a V26 para forzar la descarga de la versión corregida.

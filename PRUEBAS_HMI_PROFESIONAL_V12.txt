@@ -1,0 +1,14 @@
+PRUEBAS REALIZADAS — V12
+
+1. Validación sintáctica de todos los scripts JavaScript del index.html.
+2. Validación sintáctica del módulo hmi-codegen-v12.js.
+3. Prueba de envoltura de código Ladder con USB/OTG.
+4. Prueba de envoltura de código FBD universal con USB/OTG.
+5. Verificación de inserción de hmiBegin(), hmiLoop(), RUN, STOP y STATE.
+6. Verificación de combinación de entradas física/HMI.
+7. Compilación sintáctica de muestras generadas mediante stubs Arduino C++.
+8. Compilación sintáctica de muestra ESP32 WebSocket mediante stubs.
+9. Verificación de generación Ladder desde vista HMI cuando la fuente seleccionada es Ladder.
+10. Prueba de integridad del ZIP final.
+
+Limitación del entorno de prueba: la navegación headless local fue bloqueada por política del contenedor, por lo que no se realizó una prueba visual completa en Chromium. La validación se realizó a nivel de código, protocolo y generación C++.

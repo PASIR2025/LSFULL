@@ -1,0 +1,21 @@
+RESULTADO DE PRUEBAS HMI V27
+============================
+
+[OK] Transferencia entre bandas cercanas.
+     Caja tomada por la banda correcta y desplazada hacia la izquierda.
+
+[OK] Parada total.
+     0 variables visuales activas después de detener.
+     0 sensores del cilindro encendidos después de detener.
+
+[OK] Pistón vertical.
+     La caja cambió su coordenada Y sin cambiar la coordenada X.
+
+[OK] Textos y variables.
+     Estado ocultable, Q de extensión activa en verde y nombre rotado/desplazado.
+
+[OK] Nombre independiente.
+     Arrastre del nombre modifica labelX/labelY sin mover el componente.
+
+[OK] JavaScript.
+     92 scripts internos pasan node --check.
