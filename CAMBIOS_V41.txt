@@ -1,0 +1,8 @@
+SIMUPLC HMI PROFESIONAL V41
+
+- Android Chrome 148+ usa obligatoriamente Web Serial USB nativo.
+- Se migra cualquier preferencia WebUSB antigua a USB automático.
+- WebUSB queda únicamente como compatibilidad manual para navegadores antiguos.
+- Arduino Uno se abre con filtros VID y con reinicio DTR controlado.
+- Se evita reabrir el Arduino repetidamente a muchas velocidades en Android.
+- Keepalive continuo para impedir que el programa se detenga después de varios segundos.
