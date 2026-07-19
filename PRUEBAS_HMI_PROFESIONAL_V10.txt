@@ -1,8 +1,0 @@
-PRUEBAS REALIZADAS V10
-
-1. Validación de sintaxis de los 91 bloques JavaScript: correcta.
-2. Verificación estática de rotor de motor, impulsor de bomba y válvula nueva: correcta.
-3. Verificación de clases forward/reverse/star/delta/fault: correcta.
-4. Verificación de ocultamiento del panel durante ajuste de tanque: correcta.
-5. Verificación del caché PWA actualizado a V10: correcta.
-6. Integridad del ZIP: correcta.
