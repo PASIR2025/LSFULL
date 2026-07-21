@@ -1,0 +1,105 @@
+const CACHE_NAME = 'simuplc-hmi-v41-8-library-close-mobile-toolbar-20260721';
+
+const APP_SHELL = [
+  './',
+  './index.html',
+  './ladder_mobile_compact.html',
+  './manifest.json',
+  './instalarpc.html',
+  './privacy.html',
+  './terms.html',
+  './diagnostico_usb_android.html',
+  './arduino512.jpg',
+  './assets/css/app.css',
+  './assets/js/main.js?v=40',
+  './assets/js/hmi-codegen-v18.js',
+  './assets/js/webusb-serial-v21.js?v=41',
+  './assets/js/hmi-global-control-v23.js?v=411',
+  './icons/cursos.png',
+  './icons/miscursos.png',
+  './icons/tutorial_logicsoft.png',
+  './icons/icon-clean-sim.png',
+  './icons/icon-fbd.png',
+  './icons/icon-ladder.png',
+  './icons/tiktok.png',
+  './icons/youtube.png',
+  './icons/icon-72.png',
+  './icons/icon-96.png',
+  './icons/icon-144.png',
+  './icons/icon-152.png',
+  './icons/icon-192.png',
+  './icons/icon-384.png',
+  './icons/icon-512.png',
+  './hardware/Arduino_USB_OTG/SimuPLC_HMI_USB_OTG.ino',
+  './hardware/PRUEBA_ANDROID_I1_Q1_V41_NO_BLOQUEANTE/PRUEBA_ANDROID_I1_Q1_V41_NO_BLOQUEANTE.ino',
+  './hardware/ESP32_WebSocket/SimuPLC_ESP32_WebSocket.ino',
+  './hardware/GUIA_CONEXION_HMI.md',
+  './hardware/PROTOCOLO_SIMUPLC_IO_V1.md',
+  './GUIA_GENERADOR_HMI_V12.md',
+  './GUIA_USB_ANDROID_V19.md',
+  './GUIA_MODO_GLOBAL_V21.md',
+  './GUIA_CONTROL_HMI_FISICO_V23.md',
+  './GUIA_PROCESO_NEUMATICO_V22.md',
+  './CAMBIOS_V41_1_CONTROL_LOGICO.txt',
+  './README_SUBIR_A_GITHUB_V41_1.txt',
+  './GUIA_HMI_FREE_PRO_V41_2.md',
+  './CAMBIOS_V41_2_HMI_FREE_PRO.txt',
+  './README_SUBIR_A_GITHUB_V41_2.txt',
+  './VERIFICACION_V41_2.txt'
+];
+
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(APP_SHELL.map((url) => cache.add(url)))
+    )
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys.map((key) => key === CACHE_NAME ? Promise.resolve() : caches.delete(key))
+      ))
+      .then(() => self.clients.claim())
+  );
+});
+
+async function networkFirst(request) {
+  try {
+    const fresh = await fetch(request, { cache: 'no-store' });
+    if (fresh && fresh.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, fresh.clone()).catch(() => {});
+    }
+    return fresh;
+  } catch (_error) {
+    return (await caches.match(request)) || (await caches.match('./index.html'));
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response && response.ok) {
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, response.clone()).catch(() => {});
+  }
+  return response;
+}
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  const request = event.request;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) {
+    event.respondWith(fetch(request, { cache: 'no-store' }));
+    return;
+  }
+  const isNavigation = request.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html');
+  const isCriticalCode = url.pathname.endsWith('/service-worker.js') || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/ladder_mobile_compact.html') || url.pathname.includes('/assets/js/');
+  event.respondWith((isNavigation || isCriticalCode) ? networkFirst(request) : cacheFirst(request));
+});

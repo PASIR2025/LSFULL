@@ -1,0 +1,8 @@
+SIMUPLC HMI V41.7 - PAN EN PC Y BIBLIOTECA PLEGABLE
+
+1. PC: el lienzo HMI se desplaza arrastrando con el botón izquierdo sobre una zona vacía.
+2. Tablet y celular: se mantiene el desplazamiento táctil y el zoom con dos dedos.
+3. Se eliminó el reajuste innecesario al hacer clic en una zona vacía, evitando el temblor visual.
+4. La biblioteca HMI inicia oculta en PC, tablet y celular. Se abre y se cierra con el botón + y la X.
+5. El selector de plantillas permanece visible junto al botón Aplicar en vista responsive, vertical y horizontal.
+6. Se actualizó el nombre de caché del service worker para forzar la nueva versión.

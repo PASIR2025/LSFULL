@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#003366">
+  <meta name="description" content="Instala SimuPLC Lab como aplicación en tu computadora, tablet o celular.">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <title>Instalar SimuPLC Lab</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif}
+    body{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top,#e0f2fe 0,#eef2ff 42%,#e2e8f0 100%);color:#0f172a}
+    .card{width:min(560px,100%);background:#fff;border:1px solid #cbd5e1;border-radius:24px;padding:28px;box-shadow:0 24px 70px rgba(15,23,42,.18);text-align:center}
+    .logo{width:96px;height:96px;border-radius:24px;box-shadow:0 10px 24px rgba(0,51,102,.2);margin-bottom:14px}
+    h1{margin:0 0 8px;font-size:clamp(27px,5vw,38px);color:#003366}
+    .lead{margin:0 auto 20px;max-width:440px;color:#475569;font-size:16px;line-height:1.55}
+    .status{min-height:48px;margin:14px 0;padding:12px 14px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:14px;line-height:1.45}
+    .actions{display:grid;gap:10px}
+    button,a.action{width:100%;min-height:54px;border-radius:14px;padding:0 18px;font-size:17px;font-weight:900;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center}
+    #installBtn{border:1px solid #1d4ed8;background:#2563eb;color:#fff;box-shadow:0 9px 20px rgba(37,99,235,.22)}
+    #installBtn:hover{background:#1d4ed8}
+    #installBtn:disabled{cursor:not-allowed;background:#94a3b8;border-color:#94a3b8;box-shadow:none}
+    #openBtn{border:1px solid #94a3b8;background:#fff;color:#0f3b5a}
+    .steps{margin-top:18px;text-align:left;border-top:1px solid #e2e8f0;padding-top:16px;color:#475569;font-size:13px;line-height:1.55}
+    .steps strong{color:#0f172a}
+    .installed{background:#ecfdf5!important;border-color:#86efac!important;color:#166534!important}
+    .warning{background:#fff7ed!important;border-color:#fdba74!important;color:#9a3412!important}
+    @media(max-width:520px){body{padding:10px}.card{padding:22px 17px;border-radius:18px}.logo{width:82px;height:82px}}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <img class="logo" src="./icons/icon-192.png" alt="SimuPLC Lab">
+    <h1>Instalar SimuPLC Lab</h1>
+    <p class="lead">Instálalo como una aplicación para abrirlo rápidamente desde tu escritorio o pantalla de inicio.</p>
+
+    <div id="status" class="status" aria-live="polite">Preparando el instalador…</div>
+
+    <div class="actions">
+      <button id="installBtn" type="button">Instalar ahora</button>
+      <a id="openBtn" class="action" href="./index.html">Abrir SimuPLC sin instalar</a>
+    </div>
+
+    <div id="steps" class="steps">
+      <strong>Recomendado:</strong> abre este enlace con Google Chrome o Microsoft Edge. En iPhone o iPad usa Compartir → Añadir a pantalla de inicio.
+    </div>
+  </main>
+
+  <script>
+  (function(){
+    var deferredPrompt = null;
+    var installBtn = document.getElementById('installBtn');
+    var status = document.getElementById('status');
+    var steps = document.getElementById('steps');
+    var isStandalone = ['standalone','fullscreen','minimal-ui','window-controls-overlay'].some(function(mode){ return window.matchMedia('(display-mode: ' + mode + ')').matches; }) || window.navigator.standalone === true;
+    if(isStandalone){
+      window.location.replace('./index.html?source=installed');
+      return;
+    }
+    var ua = navigator.userAgent || '';
+    var isIOS = /iPad|iPhone|iPod/.test(ua);
+
+    function setStatus(message, className){
+      status.textContent = message;
+      status.className = 'status' + (className ? ' ' + className : '');
+    }
+
+    function markInstalled(){
+      installBtn.textContent = 'SimuPLC ya está instalado';
+      installBtn.disabled = true;
+      setStatus('La aplicación ya está instalada en este dispositivo.', 'installed');
+    }
+
+    async function registerServiceWorker(){
+      if(!('serviceWorker' in navigator)){
+        setStatus('Este navegador no admite la instalación PWA. Abre el enlace en Chrome o Edge.', 'warning');
+        return;
+      }
+      try{
+        await navigator.serviceWorker.register('./service-worker.js', {scope:'./'});
+        await navigator.serviceWorker.ready;
+        if(!deferredPrompt && !isStandalone){
+          setStatus('Instalador listo. Presiona “Instalar ahora”.');
+        }
+      }catch(error){
+        console.error('[SimuPLC Installer] Service worker:', error);
+        setStatus('No se pudo preparar la instalación. Comprueba que abriste el enlace mediante HTTPS.', 'warning');
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', function(event){
+      event.preventDefault();
+      deferredPrompt = event;
+      installBtn.disabled = false;
+      setStatus('SimuPLC está listo para instalarse. Presiona “Instalar ahora”.', 'installed');
+    });
+
+    window.addEventListener('appinstalled', function(){
+      deferredPrompt = null;
+      markInstalled();
+    });
+
+    installBtn.addEventListener('click', async function(){
+      if(deferredPrompt){
+        installBtn.disabled = true;
+        setStatus('Abriendo la ventana de instalación…');
+        try{
+          await deferredPrompt.prompt();
+          var choice = await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          if(choice && choice.outcome === 'accepted'){
+            setStatus('Instalación aceptada. Espera unos segundos mientras finaliza.', 'installed');
+          }else{
+            installBtn.disabled = false;
+            setStatus('La instalación fue cancelada. Puedes intentarlo nuevamente.', 'warning');
+          }
+        }catch(error){
+          console.error('[SimuPLC Installer] Prompt:', error);
+          installBtn.disabled = false;
+          setStatus('No se pudo abrir el instalador automáticamente. Usa el icono de instalación de la barra del navegador.', 'warning');
+        }
+        return;
+      }
+
+      if(isIOS){
+        setStatus('En iPhone o iPad: toca Compartir y luego “Añadir a pantalla de inicio”.', 'warning');
+        steps.innerHTML = '<strong>iPhone/iPad:</strong> toca el botón Compartir de Safari → Añadir a pantalla de inicio → Añadir.';
+        return;
+      }
+
+      setStatus('El navegador todavía no habilitó el instalador. Espera unos segundos y vuelve a pulsar. También puedes usar el icono “Instalar” de la barra de Chrome o Edge.', 'warning');
+      registerServiceWorker();
+    });
+
+    if(isIOS){
+      installBtn.textContent = 'Ver cómo instalar';
+      setStatus('En iPhone o iPad la instalación se realiza desde el menú Compartir.', 'warning');
+    }else{
+      installBtn.disabled = false;
+      registerServiceWorker();
+      setTimeout(function(){
+        if(!deferredPrompt && !isStandalone){
+          setStatus('Presiona “Instalar ahora”. Si el navegador aún no muestra la ventana, usa el icono de instalación de la barra de Chrome o Edge.');
+        }
+      }, 1800);
+    }
+  })();
+  </script>
+</body>
+</html>
