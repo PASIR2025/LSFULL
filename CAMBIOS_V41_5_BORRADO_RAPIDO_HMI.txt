@@ -1,8 +1,0 @@
-SIMUPLC HMI V41.5 - BORRADO RÁPIDO DE ELEMENTOS
-
-1. Al seleccionar un elemento en modo Diseño aparece un botón rojo fijo al costado derecho.
-2. También aparece una papelera sobre el elemento seleccionado.
-3. En móviles, el botón fijo se muestra como un icono grande y táctil.
-4. Antes de borrar se solicita confirmación con el nombre del elemento.
-5. Los botones se ocultan automáticamente en modo Operación.
-6. Se actualizó la versión de caché del service worker.
