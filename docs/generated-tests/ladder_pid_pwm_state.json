@@ -1,0 +1,78 @@
+{
+  "version": 3,
+  "type": "ladder-free-pro-industrial",
+  "rungs": [
+    {
+      "id": "r1",
+      "elements": [
+        {
+          "id": "ai1",
+          "type": "analog_input",
+          "label": "AI1",
+          "rawMin": 0,
+          "rawMax": 4095,
+          "engMin": 0,
+          "engMax": 100,
+          "outputMode": "scaled",
+          "clamp": true
+        },
+        {
+          "id": "ai2",
+          "type": "analog_input",
+          "label": "AI2",
+          "rawMin": 0,
+          "rawMax": 4095,
+          "engMin": 0,
+          "engMax": 100,
+          "outputMode": "scaled",
+          "clamp": true
+        },
+        {
+          "id": "pid1",
+          "type": "pid",
+          "label": "PID1",
+          "kp": 2,
+          "ki": 0.05,
+          "kd": 0.05,
+          "sampleMs": 100,
+          "outMin": 0,
+          "outMax": 100,
+          "mode": "auto",
+          "direction": "heating",
+          "manualOutput": 0
+        },
+        {
+          "id": "pwm1",
+          "type": "pwm_output",
+          "label": "PWM1",
+          "inMin": 0,
+          "inMax": 100,
+          "frequency": 1000,
+          "resolution": 8,
+          "clamp": true
+        }
+      ]
+    }
+  ],
+  "proWires": [
+    {
+      "id": "w1",
+      "from": "ai1:out",
+      "to": "pid1:pv",
+      "signalType": "analog"
+    },
+    {
+      "id": "w2",
+      "from": "ai2:out",
+      "to": "pid1:sp",
+      "signalType": "analog"
+    },
+    {
+      "id": "w3",
+      "from": "pid1:out",
+      "to": "pwm1:in",
+      "signalType": "analog"
+    }
+  ],
+  "proJunctions": []
+}
