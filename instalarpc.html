@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instalar SimuPLC Lab | SimuPLC</title>
+  <meta name="description" content="Instala SimuPLC Lab en Android, iPhone o Windows." />
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#eef2f7;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:rgba(15,23,42,.10);
+      --blue:#2563eb;
+      --blue2:#1d4ed8;
+      --dark:#0f172a;
+      --green:#16a34a;
+      --orange:#f59e0b;
+      --shadow:0 18px 45px rgba(15,23,42,.10);
+      --radius:24px;
+    }
+    body{
+      font-family:"Bahnschrift","Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(22,163,74,.10), transparent 36%),
+        linear-gradient(180deg,#f8fafc,var(--bg));
+    }
+    .page{max-width:1180px;margin:0 auto;padding:22px 16px 34px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      margin-bottom:18px;padding:14px 16px;border:1px solid var(--border);
+      background:rgba(255,255,255,.78);backdrop-filter:blur(14px);
+      border-radius:22px;box-shadow:0 10px 28px rgba(15,23,42,.06);
+    }
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .brand-mark{
+      width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--dark),var(--blue2));color:#fff;
+      font-weight:900;letter-spacing:-.08em;
+    }
+    .brand-text strong{display:block;font-size:1rem;line-height:1.1}
+    .brand-text span{color:var(--muted);font-size:.82rem}
+    .back{
+      text-decoration:none;color:var(--text);font-weight:800;border:1px solid var(--border);
+      border-radius:14px;padding:11px 14px;background:#fff;
+    }
+    .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:stretch}
+    .hero-main,.hero-side,.install-card,.steps,.note{
+      border:1px solid var(--border);background:rgba(255,255,255,.82);
+      border-radius:var(--radius);box-shadow:var(--shadow);
+    }
+    .hero-main{
+      padding:38px 34px;position:relative;overflow:hidden;min-height:430px;
+      display:flex;flex-direction:column;justify-content:center;
+    }
+    .hero-main::after{
+      content:"";position:absolute;right:-90px;bottom:-120px;width:320px;height:320px;
+      border-radius:999px;background:radial-gradient(circle, rgba(37,99,235,.18), transparent 64%);
+    }
+    .badge{
+      display:inline-flex;align-items:center;width:max-content;gap:8px;padding:9px 13px;
+      border-radius:999px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.18);
+      color:var(--blue2);font-size:.82rem;font-weight:900;text-transform:uppercase;
+      letter-spacing:.05em;margin-bottom:16px;
+    }
+    h1{
+      font-size:clamp(2.35rem,6vw,4.2rem);line-height:.98;letter-spacing:-.055em;
+      font-weight:900;max-width:10ch;margin-bottom:16px;
+    }
+    .hero-main p{
+      color:var(--muted);font-family:"Inter","Segoe UI",Arial,sans-serif;
+      font-size:1.03rem;line-height:1.7;max-width:58ch;margin-bottom:22px;
+    }
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 18px;
+      border-radius:16px;text-decoration:none;font-weight:900;border:1px solid transparent;
+      cursor:pointer;transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .btn.primary{
+      background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;
+      box-shadow:0 14px 28px rgba(37,99,235,.25);
+    }
+    .btn.ghost{background:#fff;color:var(--text);border-color:var(--border)}
+    .hero-side{
+      padding:20px;display:flex;flex-direction:column;justify-content:space-between;
+      background:
+        linear-gradient(180deg, rgba(15,23,42,.88), rgba(15,23,42,.72)),
+        radial-gradient(circle at top left, rgba(37,99,235,.45), transparent 35%);
+      color:#fff;
+    }
+    .screen{
+      min-height:245px;border-radius:20px;border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+      padding:18px;display:flex;flex-direction:column;justify-content:space-between;
+      overflow:hidden;position:relative;
+    }
+    .screen::before{
+      content:"LADDER  •  FBD  •  PLC  •  ARDUINO";
+      position:absolute;left:18px;top:18px;color:rgba(255,255,255,.35);
+      font-size:.76rem;letter-spacing:.16em;font-weight:800;
+    }
+    .diagram{margin-top:42px;display:grid;gap:12px}
+    .line{height:12px;border-radius:999px;background:rgba(255,255,255,.18)}
+    .line:nth-child(1){width:78%}.line:nth-child(2){width:56%}.line:nth-child(3){width:88%}.line:nth-child(4){width:48%}
+    .code-box{
+      margin-top:16px;padding:14px;border-radius:16px;background:rgba(2,6,23,.42);
+      color:#bfdbfe;font-family:Consolas,monospace;font-size:.84rem;line-height:1.5;
+    }
+    .hero-side h2{font-size:1.5rem;line-height:1.1;letter-spacing:-.03em;margin-top:18px;margin-bottom:8px}
+    .hero-side p{color:rgba(255,255,255,.78);font-family:"Inter","Segoe UI",Arial,sans-serif;line-height:1.6}
+    .install-section{margin-top:20px}
+    .section-title{margin-bottom:14px}
+    .section-title h2{font-size:2rem;letter-spacing:-.04em;line-height:1.05;margin-bottom:6px}
+    .section-title p{color:var(--muted);font-family:"Inter","Segoe UI",Arial,sans-serif;line-height:1.6}
+    .install-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .install-card{padding:22px;display:flex;flex-direction:column;min-height:300px;transition:.18s ease}
+    .install-card:hover{transform:translateY(-3px);border-color:rgba(37,99,235,.28)}
+    .icon{
+      width:58px;height:58px;border-radius:18px;display:grid;place-items:center;
+      font-size:1.8rem;margin-bottom:16px;background:rgba(37,99,235,.08);
+    }
+    .install-card.android .icon{background:rgba(22,163,74,.10)}
+    .install-card.iphone .icon{background:rgba(15,23,42,.08)}
+    .install-card.windows .icon{background:rgba(37,99,235,.10)}
+    .install-card h3{font-size:1.35rem;line-height:1.15;letter-spacing:-.035em;margin-bottom:8px}
+    .install-card p{
+      color:var(--muted);font-family:"Inter","Segoe UI",Arial,sans-serif;
+      line-height:1.58;font-size:.95rem;margin-bottom:16px;
+    }
+    .mini-list{
+      list-style:none;display:grid;gap:8px;margin-bottom:18px;
+      font-family:"Inter","Segoe UI",Arial,sans-serif;color:var(--text);font-size:.92rem;
+    }
+    .mini-list li::before{content:"✓";color:var(--green);font-weight:900;margin-right:8px}
+    .install-card .btn{margin-top:auto;width:100%}
+    .btn.android{background:linear-gradient(135deg,#22c55e,#16a34a);color:#052e16}
+    .btn.iphone{background:linear-gradient(135deg,#111827,#0f172a);color:#fff}
+    .btn.windows{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff}
+    .steps-note-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+    .steps,.note{padding:22px}
+    .steps h2,.note h2{font-size:1.45rem;letter-spacing:-.035em;margin-bottom:12px}
+    .steps ol{
+      padding-left:22px;display:grid;gap:10px;color:var(--muted);
+      font-family:"Inter","Segoe UI",Arial,sans-serif;line-height:1.6;
+    }
+    .note p{
+      color:var(--muted);font-family:"Inter","Segoe UI",Arial,sans-serif;
+      line-height:1.7;margin-bottom:12px;
+    }
+    .warning{
+      padding:13px 14px;border-radius:16px;background:rgba(245,158,11,.10);
+      border:1px solid rgba(245,158,11,.25);color:#92400e;
+      font-family:"Inter","Segoe UI",Arial,sans-serif;line-height:1.55;font-size:.93rem;
+    }
+    footer{text-align:center;color:var(--muted);margin-top:26px;font-family:"Inter","Segoe UI",Arial,sans-serif;font-size:.9rem}
+    @media(max-width:900px){
+      .hero,.install-grid,.steps-note-grid{grid-template-columns:1fr}
+      .hero-main{min-height:auto;padding:30px 22px}
+      .hero-side{min-height:auto}
+    }
+    @media(max-width:520px){
+      .page{padding:12px 10px 28px}
+      .topbar{padding:10px;border-radius:18px}
+      .brand-text span{display:none}
+      .back{font-size:.82rem;padding:10px 11px}
+      .hero-main{padding:26px 18px;border-radius:20px}
+      h1{font-size:2.25rem}
+      .install-card,.steps,.note{border-radius:20px}
+      .section-title h2{font-size:1.65rem}
+    }
+
+    .modal-overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.68);
+      z-index:9999;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .modal-overlay.open{display:flex}
+    .modal-box{
+      width:min(560px,100%);
+      background:#fff;
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 22px 70px rgba(0,0,0,.28);
+      border:1px solid rgba(15,23,42,.10);
+    }
+    .modal-box h2{
+      font-size:1.65rem;
+      line-height:1.05;
+      letter-spacing:-.04em;
+      margin-bottom:10px;
+    }
+    .modal-box p{
+      color:var(--muted);
+      font-family:"Inter","Segoe UI",Arial,sans-serif;
+      line-height:1.65;
+      margin-bottom:14px;
+    }
+    .modal-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .plan-grid{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+    .plan-card{
+      border:1px solid rgba(15,23,42,.12);
+      border-radius:18px;
+      padding:16px;
+      background:#f8fafc;
+    }
+    .plan-card.popular{
+      border:2px solid rgba(245,158,11,.72);
+      background:linear-gradient(180deg,rgba(245,158,11,.12),#fff);
+    }
+    .plan-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .plan-name{
+      font-weight:900;
+      font-size:1.05rem;
+    }
+    .plan-badge{
+      border-radius:999px;
+      background:rgba(245,158,11,.16);
+      border:1px solid rgba(245,158,11,.42);
+      color:#92400e;
+      padding:4px 9px;
+      font-size:.76rem;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .plan-price{
+      font-size:1.65rem;
+      font-weight:900;
+      letter-spacing:-.04em;
+      margin:6px 0;
+    }
+    .plan-usd{
+      color:var(--muted);
+      font-family:"Inter","Segoe UI",Arial,sans-serif;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        
+        <div class="brand-text">
+          <strong>Instala SimuPLC Lab</strong>
+     
+        </div>
+      </a>
+      <a href="index.html" class="back" id="backToMain">← Volver a la web</a>
+    </header>
+
+   
+
+      <div class="install-grid">
+        <article class="install-card android">
+          <div class="icon">🤖</div>
+          <h3>Inatalacion en Android</h3>
+          <p>Descarga SimuPLC Lab directamente en tu celular o tablet Android.</p>
+          <ul class="mini-list">
+            <li>Compatible con celulares y tablets Android</li>
+            <li>Instalación directa desde playstore</li>
+            <li>Ideal para usar con ArduinoDroid</li>
+          </ul>
+          <a class="btn android" href="https://play.google.com/store/apps/details?id=com.pasir.simuplc"  target="_blank" id="btnAndroid">Descargar APK Android</a>
+        </article>
+
+        <article class="install-card iphone">
+          <div class="icon"></div>
+          <h3>Instalar en iPhone</h3>
+          <p>Instala SimuPLC Lab como PWA desde Safari y úsalo como una app en la pantalla de inicio.</p>
+          <ul class="mini-list">
+            <li>Abrir desde Safari</li>
+            <li>Agregar a pantalla de inicio</li>
+            <li>No requiere App Store</li>
+          </ul>
+          <a class="btn iphone" href="#" id="btnIphone">Instalar en iPhone</a>
+        </article>
+
+        <article class="install-card windows">
+          <div class="icon">🪟</div>
+          <h3>Instalacion en PC o Laptop</h3>
+          <p>Abre esta pagina en google Chrome para poder instalar de forma rápida y segura.</p>
+          <ul class="mini-list">
+            <li>Compatible con Windows 10 en adelante</li>
+            <li>Acceso directo desde escritorio</li>
+            <li>Ideal para clases y laboratorio</li>
+          </ul>
+          <a class="btn windows" href="https://simuplc.escuelapasir.com/instalarwindows" target="_blank"  target="_blank" id="btnWindows">Instalar en Windows</a>
+        </article>
+      </div>
+    </section>
+
+   
+
+    <footer>© Escuela PASIR · SimuPLC · Arduino PLC</footer>
+  </main>
+
+  <script>
+    /*
+      Conectar enlaces reales:
+      document.getElementById("btnAndroid").href = "descargas/simuplc-lab.apk";
+      document.getElementById("btnIphone").href = "https://tu-dominio.com/simuplc/";
+      document.getElementById("btnWindows").href = "descargas/SimuPLC-Lab-Setup.exe";
+    */
+  </script>
+
+
+<div id="iphoneModal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-box">
+    <h2>Instalar SimuPLC Lab en iPhone</h2>
+    <p>Abre la app desde Safari usando este enlace y luego agrégala a tu pantalla de inicio.</p>
+
+    <p><a href="https://simuplc.escuelapasir.com" target="_blank" rel="noopener noreferrer">simuplc.escuelapasir.com</a></p>
+
+<ul class="mini-list">
+           <li>Abre esta página desde Safari.</li>
+          <li>Toca el botón compartir.</li>
+          <li>Elige “Agregar a pantalla de inicio”.</li>
+          <li>Confirma el nombre SimuPLC Lab.</li>
+          <li>Abre la app desde el icono creado.</li>
+          </ul>
+
+    <div class="modal-actions">
+      <a href="https://simuplc.escuelapasir.com" target="_blank" rel="noopener noreferrer" class="btn primary">Abrir App</a>
+      <a href="https://www.youtube.com/watch?v=p1JmzB6E-C8&list=RDp1JmzB6E-C8&start_radio=1" target="_blank" rel="noopener noreferrer" class="btn ghost">Ver tutorial de instalación</a>
+      <button class="btn ghost" type="button" data-close-modal="iphoneModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="planesModal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-box">
+    <h2>Elegir licencia de SimuPLC Lab</h2>
+    <p>Selecciona el plan que deseas adquirir. Al elegir un plan serás enviado a la pasarela de pago.</p>
+
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-top">
+          <div class="plan-name">Plan Anual</div>
+          <span class="plan-badge">12 meses</span>
+        </div>
+        <div class="plan-price">S/ 49</div>
+        <div class="plan-usd">$15 USD</div>
+        <a class="btn primary" href="pasarela.html?product=SimuPLC+Lab&category=Apps&plan=Licencia+anual&pen=49&usd=15&price=S%2F+49&currency=PEN&amount=49">Elegir plan anual</a>
+      </div>
+
+      <div class="plan-card popular">
+        <div class="plan-top">
+          <div class="plan-name">Plan de por vida</div>
+          <span class="plan-badge">🔥 Más popular</span>
+        </div>
+        <div class="plan-price">S/ 59</div>
+        <div class="plan-usd">$25 USD</div>
+        <a class="btn primary" href="pasarela.html?product=SimuPLC+Lab&category=Apps&plan=Licencia+de+por+vida&pen=59&usd=25&price=S%2F+59&currency=PEN&amount=59">Elegir plan de por vida</a>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" type="button" data-close-modal="planesModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function openModal(id, hash){
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.documentElement.style.overflow = 'hidden';
+    if (hash && location.hash !== hash) history.pushState({modal:id}, '', hash);
+  }
+
+  function closeModal(id, fromHistory){
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    document.documentElement.style.overflow = '';
+    if (!fromHistory && (location.hash === '#iphone' || location.hash === '#planes')) {
+      history.back();
+    }
+  }
+
+  function closeAnyModal(fromHistory){
+    ['iphoneModal','planesModal'].forEach(function(id) {
+      const modal = document.getElementById(id);
+      if (modal && modal.classList.contains('open')) closeModal(id, fromHistory);
+    });
+  }
+
+  const btnIphone = document.getElementById('btnIphone');
+  if (btnIphone) {
+    btnIphone.addEventListener('click', function(e) {
+      e.preventDefault();
+      openModal('iphoneModal', '#iphone');
+    });
+  }
+
+  const btnPlanes = document.getElementById('btnPlanes');
+  if (btnPlanes) {
+    btnPlanes.addEventListener('click', function(e) {
+      e.preventDefault();
+      openModal('planesModal', '#planes');
+    });
+  }
+
+  document.querySelectorAll('[data-close-modal]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      closeModal(btn.getAttribute('data-close-modal'), false);
+    });
+  });
+
+  document.querySelectorAll('.modal-overlay').forEach(function(modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeModal(modal.id, false);
+    });
+  });
+
+  const back = document.getElementById('backToMain');
+  if (back) {
+    back.addEventListener('click', function(e) {
+      if (history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+  }
+
+  window.addEventListener('popstate', function() {
+    closeAnyModal(true);
+  });
+
+  if (location.hash === '#iphone') openModal('iphoneModal', null);
+  if (location.hash === '#planes') openModal('planesModal', null);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "app": "SimuPLC Lab",
+  "version": "1.2.14-billing-backend",
+  "date": "2026-08-07",
+  "base": "SimuPLC_1.2_Ladder_Split_Dos_Salidas_V13.zip",
+  "projectSchema": 1,
+  "fbdSchema": 5,
+  "ladderSchema": 4,
+  "cache": "simuplc-1-2-billing-backend-v14",
+  "buildDate": "2026-08-07",
+  "phase": 3,
+  "description": "SimuPLC V14: conserva V13 y endurece Google Play Billing con verificación/acknowledge por backend, confirmación PURCHASED + ACKNOWLEDGED antes de activar PRO, revalidación de derechos y revocación de compras reembolsadas sin afectar licencias manuales.",
+  "step": "billing-backend-v14"
+}

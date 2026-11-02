@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Diagnóstico USB Android — SimuPLC V40</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#102a43;background:#eef3f8}*{box-sizing:border-box}body{margin:0;padding:18px}.card{max-width:760px;margin:auto;background:#fff;border:1px solid #bcccdc;border-radius:18px;box-shadow:0 18px 50px rgba(15,42,67,.16);padding:20px}h1{margin:0 0 5px;color:#06496d;font-size:25px}p{line-height:1.5}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}.item{border:1px solid #d5dde5;border-radius:12px;padding:12px;background:#f8fafc}.item span{display:block;text-transform:uppercase;font-size:10px;font-weight:800;color:#627d98}.item b{display:block;margin-top:5px;overflow-wrap:anywhere}.actions{display:flex;flex-wrap:wrap;gap:10px}.actions button{border:1px solid #0b638c;border-radius:10px;padding:12px 15px;background:#0b638c;color:white;font-weight:800;font-size:14px}.actions button.secondary{background:white;color:#0b638c}.actions button:disabled{opacity:.5}.status{margin-top:15px;border-radius:12px;padding:12px;background:#eaf7ef;border:1px solid #8fd3aa;font-weight:800}.status.error{background:#fff1f0;border-color:#ef9a9a;color:#922}.log{margin-top:12px;min-height:180px;max-height:340px;overflow:auto;background:#071521;color:#d1fae5;border-radius:12px;padding:12px;white-space:pre-wrap;font:12px/1.5 Consolas,monospace}.note{font-size:13px;color:#486581;background:#f0f4f8;border-radius:10px;padding:10px;margin-top:14px}@media(max-width:620px){body{padding:8px}.card{padding:14px;border-radius:12px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="card">
+<h1>Diagnóstico USB Android V40</h1>
+<p>En Chrome 148 o superior se utiliza Web Serial nativo. WebUSB se reserva como respaldo forzado.</p>
+<div class="grid">
+<div class="item"><span>Android</span><b id="android">—</b></div>
+<div class="item"><span>HTTPS</span><b id="secure">—</b></div>
+<div class="item"><span>Web Serial</span><b id="webserial">—</b></div>
+<div class="item"><span>WebUSB respaldo</span><b id="webusb">—</b></div>
+<div class="item"><span>Placa</span><b id="device">No seleccionada</b></div>
+<div class="item"><span>Transporte</span><b id="backend">—</b></div>
+</div>
+<div class="actions">
+<button id="selectBtn">1. Seleccionar Arduino</button>
+<button class="secondary" id="openBtn" disabled>2. Abrir a 115200</button>
+<button class="secondary" id="i1OnBtn" disabled>I1 ON</button>
+<button class="secondary" id="i1OffBtn" disabled>I1 OFF</button>
+<button class="secondary" id="stateBtn" disabled>Leer estado</button>
+<button class="secondary" id="closeBtn" disabled>Cerrar puerto</button>
+</div>
+<div class="status" id="status">Listo para seleccionar la placa.</div>
+<pre class="log" id="log"></pre>
+<div class="note"><b>Prueba esperada:</b> al pulsar I1 ON debe llegar <code>STATE</code> y activarse Q1/D13. Con I1 OFF debe apagarse. No debe aparecer una ráfaga continua de <code>GET_STATE</code>.</div>
+</main>
+<script src="./assets/js/webusb-serial-v21.js?v=41"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+let port=null,reader=null,writer=null,backend='',reading=false;
+const decoder=new TextDecoder(),encoder=new TextEncoder();
+function line(text,type){$('log').textContent+='['+new Date().toLocaleTimeString()+'] '+(type==='rx'?'← ':type==='tx'?'→ ':'')+text+'\n';$('log').scrollTop=$('log').scrollHeight;}
+function status(text,error){$('status').textContent=text;$('status').className='status'+(error?' error':'');}
+function hex(v){return Number(v||0).toString(16).toUpperCase().padStart(4,'0');}
+function enableOpen(v){$('openBtn').disabled=!v;}
+function enableIo(v){['i1OnBtn','i1OffBtn','stateBtn','closeBtn'].forEach(id=>$(id).disabled=!v);}
+async function readLoop(){reading=true;let buffer='';try{while(reading&&reader){const r=await reader.read();if(r.done)break;if(!r.value)continue;buffer+=decoder.decode(r.value,{stream:true});let ix;while((ix=buffer.indexOf('\n'))>=0){const msg=buffer.slice(0,ix).replace(/\r$/,'').trim();buffer=buffer.slice(ix+1);if(msg)line(msg,'rx');}}}catch(e){if(reading){line('ERROR RX: '+e.message);status('Error de lectura: '+e.message,true);}}}
+async function send(command){if(!writer)throw new Error('Puerto no abierto.');line(command,'tx');await writer.write(encoder.encode(command+'\n'));}
+function init(){const ua=navigator.userAgent||'';$('android').textContent=/Android/i.test(ua)?'Sí':'No';$('secure').textContent=window.isSecureContext?'Sí':'No';$('webserial').textContent=navigator.serial?'Disponible':'No disponible';$('webusb').textContent=navigator.usb?'Disponible':'No disponible';if(!window.isSecureContext)status('La página debe abrirse mediante HTTPS.',true);else if(!navigator.serial&&!navigator.usb)status('Este navegador no ofrece Web Serial ni WebUSB.',true);}
+$('selectBtn').addEventListener('click',async()=>{try{status('Abriendo selector de dispositivos…');if(navigator.serial){backend='native';port=await navigator.serial.requestPort();$('backend').textContent='Web Serial Android';}else{backend='webusb';port=await window.SimuPLCWebUsbSerial.requestPort();$('backend').textContent='WebUSB alternativo';}const info=port.getInfo?port.getInfo():{};$('device').textContent=(info.productName||'Arduino / puerto serie')+' · VID '+hex(info.usbVendorId)+' / PID '+hex(info.usbProductId);enableOpen(true);line('Dispositivo seleccionado: '+$('device').textContent);status('Placa seleccionada. Pulsa Abrir a 115200.');}catch(e){status(e.message||String(e),true);line('ERROR: '+(e.message||e));}});
+$('openBtn').addEventListener('click',async()=>{try{status('Abriendo puerto…');await port.open({baudRate:115200,dataBits:8,stopBits:1,parity:'none',flowControl:'none'});reader=port.readable.getReader();writer=port.writable.getWriter();readLoop();await new Promise(r=>setTimeout(r,/Android/i.test(navigator.userAgent||'')?1800:1000));await send('HELLO,SIMUPLC,1');enableOpen(false);enableIo(true);status('Puerto abierto. Esperando respuesta del Arduino…');}catch(e){status(e.message||String(e),true);line('ERROR AL ABRIR: '+(e.message||e));}});
+$('i1OnBtn').addEventListener('click',()=>send('SET,I1,1').catch(e=>status(e.message,true)));
+$('i1OffBtn').addEventListener('click',()=>send('SET,I1,0').catch(e=>status(e.message,true)));
+$('stateBtn').addEventListener('click',()=>send('GET_STATE').catch(e=>status(e.message,true)));
+$('closeBtn').addEventListener('click',async()=>{reading=false;try{if(reader)await reader.cancel();}catch(e){}try{reader&&reader.releaseLock();}catch(e){}reader=null;try{writer&&writer.releaseLock();}catch(e){}writer=null;try{await port.close();}catch(e){}line('Puerto cerrado.');status('Puerto cerrado.');enableOpen(!!port);enableIo(false);});
+init();
+})();
+</script>
+</body>
+</html>
