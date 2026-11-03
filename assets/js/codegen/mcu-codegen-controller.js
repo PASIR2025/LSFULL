@@ -808,39 +808,20 @@
     }, true);
   }
   function installHmiDialogCloseRestore() {
-    // Escuchar únicamente el cierre real (X) de la ventana de comunicación.
-    // No modificar los botones internos ni la protección COM comprobada.
+    // Botón X real del modal HMI, identificado en DevTools: #hmiIoDialogClose.
+    // Ningún otro botón del modal cambia la protección fullscreen.
     document.addEventListener('click', function (event) {
       if (!isWindowsArduinoPC() || !windowsHmiActive) return;
-      const button = event.target && event.target.closest && event.target.closest('button,[role="button"]');
-      if (!button) return;
-      const text = (button.textContent || '').trim();
-      const aria = (button.getAttribute('aria-label') || button.getAttribute('title') || '').trim();
-      // No usar /cerrar/ sobre todo el modal: solo la X o etiqueta explícita del botón.
-      if (!/^(×|✕|✖|❌|x)$/i.test(text) && !/^(cerrar|close|cerrar ventana|close dialog)$/i.test(aria)) return;
-      // Confirmar que pertenece al modal Arduino/ESP32, no a otro panel.
-      let container = button.parentElement;
-      let confirmed = false;
-      for (let depth = 0; container && depth < 7; depth++, container = container.parentElement) {
-        const ownText = container.textContent || '';
-        if (/Comunicación con Arduino\\s*\\/\\s*ESP32/i.test(ownText)) {
-          confirmed = true;
-          break;
-        }
-      }
-      if (!confirmed) return;
-      const shouldRestore = restoreFullscreenAfterHmi;
-      // Desactivar ANTES de requestFullscreen, solo para la X confirmada.
+      const closeButton = event.target && event.target.closest && event.target.closest('#hmiIoDialogClose');
+      if (!closeButton) return;
+      const restore = restoreFullscreenAfterHmi;
       windowsHmiActive = false;
       restoreFullscreenAfterHmi = false;
       hmiConnectionDialog = null;
-      if (shouldRestore && !document.fullscreenElement) {
-        const root = document.documentElement;
-        if (typeof root.requestFullscreen === 'function') {
-          root.requestFullscreen().catch(function (err) {
-            console.warn('[SimuPLC] No se pudo recuperar fullscreen al cerrar comunicación HMI:', err);
-          });
-        }
+      if (restore && !document.fullscreenElement && typeof document.documentElement.requestFullscreen === 'function') {
+        document.documentElement.requestFullscreen().catch(function (error) {
+          console.warn('[SimuPLC] No se pudo restaurar pantalla completa al cerrar HMI:', error);
+        });
       }
     }, true);
   }
