@@ -744,15 +744,39 @@
   // ignorar solicitudes de fullscreen originadas por los controles globales.
   // No intercepta clics ni modifica Web Serial / WebUSB.
   let windowsArduinoModalActive = false;
+  let windowsHmiActive = false;
+  let restoreFullscreenAfterHmi = false;
+  function isHmiVisibleOnPC() {
+    if (!isWindowsArduinoPC()) return false;
+    const host = document.getElementById('hmiHost');
+    if (!host || !host.isConnected || !host.getClientRects().length) return false;
+    const style = getComputedStyle(host);
+    return style.display !== 'none' && style.visibility !== 'hidden';
+  }
+  function monitorWindowsHmiFullscreen() {
+    if (!isWindowsArduinoPC()) return;
+    const visible = isHmiVisibleOnPC();
+    if (visible && !windowsHmiActive) {
+      windowsHmiActive = true;
+      restoreFullscreenAfterHmi = !!document.fullscreenElement;
+    } else if (!visible && windowsHmiActive) {
+      windowsHmiActive = false;
+      // Restaurar solo cuando el usuario lo solicite: el navegador exige gesto.
+      restoreFullscreenAfterHmi = false;
+    }
+    if (visible && document.fullscreenElement) {
+      document.exitFullscreen().catch(function () {});
+    }
+  }
   const originalRequestFullscreen = Element.prototype.requestFullscreen;
   if (typeof originalRequestFullscreen === 'function') {
     Element.prototype.requestFullscreen = function () {
-      if (windowsArduinoModalActive && isWindowsArduinoPC()) return Promise.resolve();
+      if ((windowsArduinoModalActive || windowsHmiActive) && isWindowsArduinoPC()) return Promise.resolve();
       return originalRequestFullscreen.apply(this, arguments);
     };
   }
   document.addEventListener('fullscreenchange', function () {
-    if (windowsArduinoModalActive && isWindowsArduinoPC() && document.fullscreenElement) {
+    if ((windowsArduinoModalActive || windowsHmiActive) && isWindowsArduinoPC() && document.fullscreenElement) {
       document.exitFullscreen().catch(function () {});
     }
   });
@@ -881,6 +905,10 @@
   function init() {
     installCaptureHandlers();
     installArduinoFullscreenClose();
+    if (isWindowsArduinoPC()) {
+      setInterval(monitorWindowsHmiFullscreen, 200);
+      monitorWindowsHmiFullscreen();
+    }
     observeModal();
     ensureBoardOptions();
   }
