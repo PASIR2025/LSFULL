@@ -751,12 +751,21 @@
     if (!isWindowsArduinoPC()) return null;
     const headings = document.querySelectorAll('h1,h2,h3,h4,[role="heading"]');
     for (const heading of headings) {
-      if (!/Comunicación con Arduino\s*\/\s*ESP32/i.test(heading.textContent || '')) continue;
-      const dialog = heading.closest('[role="dialog"],dialog,.modal,[id*="Modal"],[id*="modal"]') || heading.parentElement?.parentElement;
-      if (!dialog || !dialog.getClientRects().length) continue;
-      const style = getComputedStyle(dialog);
-      if (style.display === 'none' || style.visibility === 'hidden') continue;
-      return dialog;
+      if (!/Comunicación con Arduino\\s*\\/\\s*ESP32/i.test(heading.textContent || '')) continue;
+      // El título puede estar en una cabecera: subir hasta el contenedor
+      // que también contiene el botón interno de conexión.
+      let dialog = heading;
+      for (let depth = 0; depth < 9 && dialog; depth++, dialog = dialog.parentElement) {
+        if (!dialog.getClientRects().length) continue;
+        const style = getComputedStyle(dialog);
+        if (style.display === 'none' || style.visibility === 'hidden') continue;
+        const buttons = Array.from(dialog.querySelectorAll('button'));
+        const hasConnect = buttons.some(function (button) {
+          return /conectar/i.test(button.textContent || '') && !/desconectar/i.test(button.textContent || '');
+        });
+        const hasDisconnect = buttons.some(function (button) { return /desconectar/i.test(button.textContent || ''); });
+        if (hasConnect && hasDisconnect) return dialog;
+      }
     }
     return null;
   }
@@ -795,12 +804,12 @@
   const originalRequestFullscreen = Element.prototype.requestFullscreen;
   if (typeof originalRequestFullscreen === 'function') {
     Element.prototype.requestFullscreen = function () {
-      if ((windowsArduinoModalActive || windowsHmiActive) && isWindowsArduinoPC()) return Promise.resolve();
+      if (isWindowsArduinoPC() && (windowsArduinoModalActive || windowsHmiActive || visibleHmiConnectionDialog())) return Promise.resolve();
       return originalRequestFullscreen.apply(this, arguments);
     };
   }
   document.addEventListener('fullscreenchange', function () {
-    if ((windowsArduinoModalActive || windowsHmiActive) && isWindowsArduinoPC() && document.fullscreenElement) {
+    if (isWindowsArduinoPC() && (windowsArduinoModalActive || windowsHmiActive || visibleHmiConnectionDialog()) && document.fullscreenElement) {
       document.exitFullscreen().catch(function () {});
     }
   });
