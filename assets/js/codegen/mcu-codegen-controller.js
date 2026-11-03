@@ -751,7 +751,7 @@
     if (!isWindowsArduinoPC()) return null;
     const headings = document.querySelectorAll('h1,h2,h3,h4,[role="heading"]');
     for (const heading of headings) {
-      if (!/Comunicación con Arduino\\s*\\/\\s*ESP32/i.test(heading.textContent || '')) continue;
+      if (!/Comunicación con Arduino\s*\/\s*ESP32/i.test(heading.textContent || '')) continue;
       // El título puede estar en una cabecera: subir hasta el contenedor
       // que también contiene el botón interno de conexión.
       let dialog = heading;
@@ -783,6 +783,17 @@
     if (dialog && document.fullscreenElement) {
       document.exitFullscreen().catch(function () {});
     }
+  }
+  function installHmiOpenGuard() {
+    document.addEventListener('click', function (event) {
+      if (!isWindowsArduinoPC()) return;
+      const button = event.target && event.target.closest && event.target.closest('#hmiIoConnectBtn');
+      if (!button) return;
+      // Activar la protección antes de que el controlador HMI abra el modal.
+      restoreFullscreenAfterHmi = !!document.fullscreenElement;
+      windowsHmiActive = true;
+      if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+    }, true);
   }
   function installHmiDialogCloseRestore() {
     document.addEventListener('click', function (event) {
@@ -938,6 +949,7 @@
   function init() {
     installCaptureHandlers();
     installArduinoFullscreenClose();
+    installHmiOpenGuard();
     installHmiDialogCloseRestore();
     if (isWindowsArduinoPC()) {
       setInterval(monitorWindowsHmiFullscreen, 200);
