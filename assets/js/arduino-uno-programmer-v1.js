@@ -18,11 +18,20 @@ async function sketch(){
  throw new Error('No se pudo obtener el código generado por SimuPLC.');
 }
 
+// Arduino IDE añade Arduino.h automáticamente al convertir un .ino a C++.
+// El compilador WASM recibe C++ directamente, por eso debemos hacer aquí esa misma preparación.
+function prepareArduinoSource(src){
+ let code=String(src||'').replace(/^\uFEFF/,'');
+ if(!/^\s*#\s*include\s*[<\"]Arduino\.h[>\"]/m.test(code)) code='#include <Arduino.h>\n'+code;
+ return code;
+}
+
 async function compile(src){
  toast('Compilando localmente para Arduino UNO…');
  const mod=await import(COMPILER);
  if(!mod||typeof mod.buildFirmware!=='function') throw new Error('No se pudo cargar el compilador AVR local.');
- const result=await mod.buildFirmware({source:String(src||''),sensors:[],assetsBase:COMPILER_ASSETS});
+ const prepared=prepareArduinoSource(src);
+ const result=await mod.buildFirmware({source:prepared,sensors:[],assetsBase:COMPILER_ASSETS});
  if(!result||!result.hex) throw new Error('El compilador no devolvió firmware HEX.');
  if(result.fitsTarget===false) throw new Error('El programa supera la memoria disponible del Arduino UNO.');
  return {hex:result.hex,flashBytes:result.flashBytes||0,ramBytes:result.ramBytes||0};
@@ -67,5 +76,5 @@ function install(){
  const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.textContent='Programación directa UNO: lista. No usa Cloud Run ni portapapeles.';actions.appendChild(s);
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,version:'2.0-local-wasm'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.1-local-wasm'});
 })(window);
