@@ -152,6 +152,12 @@ function install(){
   com.id='simuplcUnoComBtn';com.type='button';com.textContent='🔌 Elegir puerto COM';
   com.style.cssText='padding:11px 15px;margin:6px;border:1px solid #0c8559;border-radius:10px;background:#e8fff4;color:#075c3b;font-weight:800;cursor:pointer;';
   // Listener independiente, invoca requestPort sin ningún paso asíncrono previo.
+  // Evitar que los manejadores globales del simulador vuelvan a activar fullscreen
+  // cuando el usuario intenta seleccionar el puerto COM. Conservar el gesto real del clic.
+  for(const eventName of ['pointerdown','mousedown','mouseup','pointerup','touchstart','touchend']){
+   com.addEventListener(eventName,function(event){event.stopPropagation();},{capture:true});
+  }
+  com.addEventListener('click',function(event){event.stopPropagation();},{capture:true});
   com.addEventListener('click',chooseWindowsPortDirect);
   actions.insertBefore(com,document.getElementById('simuplcUnoProgramBtn'));
  }
@@ -197,5 +203,5 @@ function resetPreparedFirmware(){
  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.8-exit-fullscreen-before-com'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.9-com-stop-fullscreen-bubbling'});
 })(window);
