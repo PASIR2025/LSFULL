@@ -808,19 +808,38 @@
     }, true);
   }
   function installHmiDialogCloseRestore() {
+    // Solo la X del encabezado del modal puede restaurar fullscreen.
+    // No depender de hmiConnectionDialog: su detección puede fallar.
     document.addEventListener('click', function (event) {
-      if (!windowsHmiActive) return;
-      const target = event.target;
-      if (!target) return;
-      const button = target.closest('button,[role="button"]');
+      if (!isWindowsArduinoPC() || !windowsHmiActive) return;
+      const button = event.target && event.target.closest && event.target.closest('button,[role="button"]');
       if (!button) return;
-      const label = [button.getAttribute('aria-label'), button.getAttribute('title'), button.textContent].filter(Boolean).join(' ').trim();
-      const isClose = /^(×|✕|✖|x)$/i.test(label) || /cerrar|close/i.test(label) || (button.querySelector('svg') && button.getBoundingClientRect().top < hmiConnectionDialog.getBoundingClientRect().top + 110 && button.getBoundingClientRect().right > hmiConnectionDialog.getBoundingClientRect().right - 115);
-      if (!isClose || !hmiConnectionDialog || !hmiConnectionDialog.contains(button)) return;
+      const heading = Array.from(document.querySelectorAll('h1,h2,h3,h4,[role="heading"]')).find(function (node) {
+        return /Comunicación con Arduino\\s*\\/\\s*ESP32/i.test(node.textContent || '') && node.getClientRects().length;
+      });
+      if (!heading) return;
+      // Buscar un encabezado común que contenga título y botón X.
+      let header = heading.parentElement;
+      for (let i = 0; i < 4 && header && !header.contains(button); i++) header = header.parentElement;
+      if (!header || !header.contains(button)) return;
+      const hr = heading.getBoundingClientRect();
+      const br = button.getBoundingClientRect();
+      const topRight = br.left > hr.left + 200 && Math.abs(br.top - hr.top) < 75 && br.width <= 90 && br.height <= 90;
+      const label = [button.getAttribute('aria-label'),button.getAttribute('title'),button.textContent].filter(Boolean).join(' ').trim();
+      const closeIcon = /^(×|✕|✖|x)$/i.test(label) || /cerrar|close/i.test(label) || !!button.querySelector('svg');
+      if (!topRight || !closeIcon) return;
+      // Desactivar la protección ANTES de restaurar, en el gesto de la X.
+      const restore = restoreFullscreenAfterHmi;
       windowsHmiActive = false;
       restoreFullscreenAfterHmi = false;
-      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(function () {});
+      hmiConnectionDialog = null;
+      if (restore && !document.fullscreenElement) {
+        const root = document.documentElement;
+        if (typeof root.requestFullscreen === 'function') {
+          root.requestFullscreen().catch(function (error) {
+            console.warn('[SimuPLC] Restauración fullscreen HMI rechazada:', error);
+          });
+        }
       }
     }, true);
   }
