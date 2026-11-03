@@ -809,18 +809,31 @@
   }
   function installHmiDialogCloseRestore() {
     document.addEventListener('click', function (event) {
-      if (!windowsHmiActive) return;
+      if (!isWindowsArduinoPC() || !windowsHmiActive) return;
       const target = event.target;
-      if (!target) return;
-      const button = target.closest('button,[role="button"]');
+      const button = target && target.closest && target.closest('button,[role="button"]');
       if (!button) return;
       const label = [button.getAttribute('aria-label'), button.getAttribute('title'), button.textContent].filter(Boolean).join(' ').trim();
-      const isClose = /^(×|✕|✖|x)$/i.test(label) || /cerrar|close/i.test(label) || (button.querySelector('svg') && button.getBoundingClientRect().top < hmiConnectionDialog.getBoundingClientRect().top + 110 && button.getBoundingClientRect().right > hmiConnectionDialog.getBoundingClientRect().right - 115);
-      if (!isClose || !hmiConnectionDialog || !hmiConnectionDialog.contains(button)) return;
+      const explicitClose = /^(×|✕|✖|x)$/i.test(label) || /cerrar|close/i.test(label);
+      // El botón X está arriba a la derecha del título del modal.
+      // Detectarlo sin depender del contenedor, que puede no ser reconocido.
+      const heading = Array.from(document.querySelectorAll('h1,h2,h3,h4,[role="heading"]')).find(function (h) {
+        return /Comunicación con Arduino\\s*\\/\\s*ESP32/i.test(h.textContent || '') && h.getClientRects().length;
+      });
+      if (!heading) return;
+      const hr = heading.getBoundingClientRect();
+      const br = button.getBoundingClientRect();
+      const nearTitleClose = br.left > hr.right && Math.abs(br.top - hr.top) < 105 && br.width < 95 && br.height < 95;
+      if (!nearTitleClose || (!explicitClose && !button.querySelector('svg'))) return;
+      // Restaurar durante el gesto real de cerrar, antes de que desaparezca el modal.
       windowsHmiActive = false;
+      const shouldRestore = restoreFullscreenAfterHmi;
       restoreFullscreenAfterHmi = false;
-      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(function () {});
+      hmiConnectionDialog = null;
+      if (shouldRestore && !document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(function (error) {
+          console.warn('[SimuPLC] No se pudo restaurar pantalla completa al cerrar HMI:', error);
+        });
       }
     }, true);
   }
