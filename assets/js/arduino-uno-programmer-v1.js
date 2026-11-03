@@ -69,12 +69,39 @@ async function flashHex(hexText){
  }finally{try{reader.releaseLock();}catch(_){}try{writer.releaseLock();}catch(_){}try{await port.close();}catch(_){}}
 }
 async function compileGenerated(){const src=await sketch();const out=await compile(src);toast('✅ Código generado por SimuPLC compilado correctamente ('+(out.flashBytes||'?')+' bytes).');return out;}
-async function program(){try{const btn=document.getElementById('simuplcUnoProgramBtn');if(btn)btn.disabled=true;const src=await sketch();toast('Código de SimuPLC recibido directamente. Compilando…');const out=await compile(src);toast('Compilación correcta. Selecciona el Arduino UNO conectado por USB/OTG…');await flashHex(out.hex);}catch(e){toast('❌ '+(e&&e.message?e.message:e),true);}finally{const btn=document.getElementById('simuplcUnoProgramBtn');if(btn)btn.disabled=false;}}
+let pendingFirmware=null;
+async function program(){
+ const btn=document.getElementById('simuplcUnoProgramBtn');
+ if(btn&&btn.disabled)return;
+ if(btn)btn.disabled=true;
+ try{
+  if(!pendingFirmware){
+   const src=await sketch();
+   toast('Código de SimuPLC recibido. Compilando localmente…');
+   const out=await compile(src);
+   pendingFirmware=out.hex;
+   if(btn){btn.textContent='🔌 Conectar Arduino por USB/OTG';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
+   toast('✅ Compilación correcta ('+(out.flashBytes||'?')+' bytes). Ahora pulsa «Conectar Arduino por USB/OTG» para autorizar el dispositivo y programarlo.');
+   return;
+  }
+  // Esta segunda pulsación es el gesto del usuario exigido por Chrome para solicitar WebUSB.
+  // No realizar imports ni compilación asíncrona antes de requestDevice().
+  const hex=pendingFirmware;
+  toast('Selecciona el Arduino UNO conectado por USB/OTG…');
+  await flashHex(hex);
+  pendingFirmware=null;
+  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila el código generado por SimuPLC y prepara la conexión USB';}
+ }catch(e){
+  const message=e&&e.message?e.message:String(e);
+  toast('❌ '+message,true);
+  // Si falló el permiso USB, conservar HEX para reintentar con un nuevo toque.
+ }finally{if(btn)btn.disabled=false;}
+}
 function install(){
  const actions=document.getElementById('arduinoActions');if(!actions||document.getElementById('simuplcUnoProgramBtn'))return;
  const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='⚡ Programar Arduino UNO';btn.title='Toma directamente el código generado por SimuPLC, lo compila localmente y lo carga por USB/OTG';btn.addEventListener('click',program);actions.appendChild(btn);
  const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.textContent='Programación directa UNO: lista. No usa Cloud Run ni portapapeles.';actions.appendChild(s);
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.1-local-wasm'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.2-local-wasm-usb-gesture'});
 })(window);
