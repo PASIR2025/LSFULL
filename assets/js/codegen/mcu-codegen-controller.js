@@ -746,27 +746,51 @@
   let windowsArduinoModalActive = false;
   let windowsHmiActive = false;
   let restoreFullscreenAfterHmi = false;
-  function isHmiVisibleOnPC() {
-    if (!isWindowsArduinoPC()) return false;
-    const host = document.getElementById('hmiHost');
-    if (!host || !host.isConnected || !host.getClientRects().length) return false;
-    const style = getComputedStyle(host);
-    return style.display !== 'none' && style.visibility !== 'hidden';
+  let hmiConnectionDialog = null;
+  function visibleHmiConnectionDialog() {
+    if (!isWindowsArduinoPC()) return null;
+    const headings = document.querySelectorAll('h1,h2,h3,h4,[role="heading"]');
+    for (const heading of headings) {
+      if (!/Comunicación con Arduino\s*\/\s*ESP32/i.test(heading.textContent || '')) continue;
+      const dialog = heading.closest('[role="dialog"],dialog,.modal,[id*="Modal"],[id*="modal"]') || heading.parentElement?.parentElement;
+      if (!dialog || !dialog.getClientRects().length) continue;
+      const style = getComputedStyle(dialog);
+      if (style.display === 'none' || style.visibility === 'hidden') continue;
+      return dialog;
+    }
+    return null;
   }
   function monitorWindowsHmiFullscreen() {
     if (!isWindowsArduinoPC()) return;
-    const visible = isHmiVisibleOnPC();
-    if (visible && !windowsHmiActive) {
+    const dialog = visibleHmiConnectionDialog();
+    if (dialog && !windowsHmiActive) {
       windowsHmiActive = true;
       restoreFullscreenAfterHmi = !!document.fullscreenElement;
-    } else if (!visible && windowsHmiActive) {
+    } else if (!dialog && windowsHmiActive) {
       windowsHmiActive = false;
-      // Restaurar solo cuando el usuario lo solicite: el navegador exige gesto.
       restoreFullscreenAfterHmi = false;
     }
-    if (visible && document.fullscreenElement) {
+    hmiConnectionDialog = dialog;
+    if (dialog && document.fullscreenElement) {
       document.exitFullscreen().catch(function () {});
     }
+  }
+  function installHmiDialogCloseRestore() {
+    document.addEventListener('click', function (event) {
+      if (!windowsHmiActive || !restoreFullscreenAfterHmi || !hmiConnectionDialog) return;
+      const target = event.target;
+      if (!target || !hmiConnectionDialog.contains(target)) return;
+      const button = target.closest('button,[role="button"]');
+      if (!button) return;
+      const label = [button.getAttribute('aria-label'), button.getAttribute('title'), button.textContent].filter(Boolean).join(' ').trim();
+      const isClose = /^(×|✕|✖|x)$/i.test(label) || /cerrar|close/i.test(label) || (button.querySelector('svg') && button.getBoundingClientRect().top < hmiConnectionDialog.getBoundingClientRect().top + 110 && button.getBoundingClientRect().right > hmiConnectionDialog.getBoundingClientRect().right - 115);
+      if (!isClose) return;
+      windowsHmiActive = false;
+      restoreFullscreenAfterHmi = false;
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(function () {});
+      }
+    }, true);
   }
   const originalRequestFullscreen = Element.prototype.requestFullscreen;
   if (typeof originalRequestFullscreen === 'function') {
@@ -905,6 +929,7 @@
   function init() {
     installCaptureHandlers();
     installArduinoFullscreenClose();
+    installHmiDialogCloseRestore();
     if (isWindowsArduinoPC()) {
       setInterval(monitorWindowsHmiFullscreen, 200);
       monitorWindowsHmiFullscreen();
