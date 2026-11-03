@@ -48,7 +48,18 @@ async function requestPort(){
    if(global.SimuPLCWebUsbSerial&&global.SimuPLCWebUsbSerial.requestPort)return {port:await global.SimuPLCWebUsbSerial.requestPort(),kind:'webusb'};
    throw new Error('WebUSB OTG no está disponible en este navegador Android.');
  }
- if(navigator.serial)return {port:await navigator.serial.requestPort(),kind:'native'};
+ if(navigator.serial){
+   let selected;
+   try{selected=await navigator.serial.requestPort({filters:[]});}
+   catch(e){
+     if(e&&(e.name==='NotFoundError'||/No port selected/i.test(e.message||''))){
+       throw new Error('Windows no seleccionó ningún puerto COM. Comprueba que Arduino esté conectado con cable USB de datos y que Windows lo reconozca en Administrador de dispositivos → Puertos (COM y LPT). Abre SimuPLC en Chrome o Edge y vuelve a pulsar «Conectar Arduino». Si aparece la ventana, selecciona el COM y confirma.');
+     }
+     if(e&&e.name==='SecurityError')throw new Error('El navegador bloqueó la selección del puerto COM. Abre SimuPLC directamente en Chrome o Edge mediante HTTPS, fuera de una ventana integrada.');
+     throw e;
+   }
+   return {port:selected,kind:'native'};
+ }
  if(global.SimuPLCWebUsbSerial&&global.SimuPLCWebUsbSerial.requestPort)return {port:await global.SimuPLCWebUsbSerial.requestPort(),kind:'webusb'};
  throw new Error('Este navegador no ofrece USB compatible.');
 }
@@ -80,14 +91,14 @@ async function program(){
    toast('Código de SimuPLC recibido. Compilando localmente…');
    const out=await compile(src);
    pendingFirmware=out.hex;
-   if(btn){btn.textContent='🔌 Conectar Arduino por USB/OTG';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
+   if(btn){btn.textContent=isAndroid()?'🔌 Conectar Arduino por USB/OTG':'🔌 Seleccionar puerto COM y programar';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
    toast('✅ Compilación correcta ('+(out.flashBytes||'?')+' bytes). Ahora pulsa «Conectar Arduino por USB/OTG» para autorizar el dispositivo y programarlo.');
    return;
   }
   // Esta segunda pulsación es el gesto del usuario exigido por Chrome para solicitar WebUSB.
   // No realizar imports ni compilación asíncrona antes de requestDevice().
   const hex=pendingFirmware;
-  toast('Selecciona el Arduino UNO conectado por USB/OTG…');
+  toast(isAndroid()?'Selecciona el Arduino UNO conectado por USB/OTG…':'Windows: selecciona el puerto COM del Arduino en la ventana del navegador…');
   await flashHex(hex);
   pendingFirmware=null;
   if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila el código generado por SimuPLC y prepara la conexión USB';}
@@ -144,5 +155,5 @@ function resetPreparedFirmware(){
  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.3-local-wasm-modal'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.4-local-wasm-com-help'});
 })(window);
