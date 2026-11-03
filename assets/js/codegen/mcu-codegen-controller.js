@@ -780,6 +780,18 @@
       restoreFullscreenAfterHmi = false;
     }
     hmiConnectionDialog = dialog;
+    if (dialog && !dialog.__simuplcWindowsFullscreenEventsProtected) {
+      dialog.__simuplcWindowsFullscreenEventsProtected = true;
+      // Conservar los clics y handlers de los botones del modal,
+      // pero evitar que lleguen a los controles globales de pantalla completa.
+      ['pointerdown', 'mousedown', 'click', 'dblclick'].forEach(function (type) {
+        dialog.addEventListener(type, function (event) {
+          const button = event.target && event.target.closest && event.target.closest('button,[role="button"]');
+          if (button && /cerrar|close/i.test([button.getAttribute('aria-label'), button.getAttribute('title')].filter(Boolean).join(' '))) return;
+          event.stopPropagation();
+        });
+      });
+    }
     if (dialog && document.fullscreenElement) {
       document.exitFullscreen().catch(function () {});
     }
