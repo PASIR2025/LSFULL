@@ -98,10 +98,51 @@ async function program(){
  }finally{if(btn)btn.disabled=false;}
 }
 function install(){
- const actions=document.getElementById('arduinoActions');if(!actions||document.getElementById('simuplcUnoProgramBtn'))return;
- const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='⚡ Programar Arduino UNO';btn.title='Toma directamente el código generado por SimuPLC, lo compila localmente y lo carga por USB/OTG';btn.addEventListener('click',program);actions.appendChild(btn);
- const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.textContent='Programación directa UNO: lista. No usa Cloud Run ni portapapeles.';actions.appendChild(s);
+ const actions=document.getElementById('arduinoActions');
+ const code=document.getElementById('arduinoCode');
+ if(!actions||!code)return;
+ if(!document.getElementById('simuplcUnoProgramBtn')){
+  const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';btn.addEventListener('click',program);actions.appendChild(btn);
+  const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.setAttribute('role','status');s.setAttribute('aria-live','polite');s.textContent='Listo para compilar y programar el Arduino UNO.';actions.appendChild(s);
+ }
+ if(!document.getElementById('simuplcViewCodeBtn')){
+  const toggle=document.createElement('button');toggle.id='simuplcViewCodeBtn';toggle.type='button';toggle.textContent='👁 Ver código C++';toggle.setAttribute('aria-expanded','false');
+  toggle.style.cssText='display:block;width:100%;max-width:260px;margin:10px 0;padding:11px 14px;border:1px solid #8dbbc9;border-radius:12px;background:#e9f7fb;color:#123c4a;font-weight:800;cursor:pointer;';
+  code.parentNode.insertBefore(toggle,code);
+  toggle.addEventListener('click',function(){
+   const open=toggle.getAttribute('aria-expanded')!=='true';
+   toggle.setAttribute('aria-expanded',String(open));
+   toggle.textContent=open?'🙈 Ocultar código C++':'👁 Ver código C++';
+   updateCodeVisibility();
+  });
+ }
+ updateCodeVisibility();
+}
+function updateCodeVisibility(){
+ const code=document.getElementById('arduinoCode'),toggle=document.getElementById('simuplcViewCodeBtn');
+ if(!code||!toggle)return;
+ const board=global.SimuPLCMCUCodegen&&global.SimuPLCMCUCodegen.getBoard?global.SimuPLCMCUCodegen.getBoard():'uno';
+ const uno=board==='uno'||board==='arduino-uno'||board==='arduino-uno-r3'||board==='uno-r3';
+ const expanded=toggle.getAttribute('aria-expanded')==='true';
+ toggle.style.display=uno?'block':'none';
+ code.style.display=(!uno||expanded)?'':'none';
+ for(const id of ['arduinoCopy','arduinoDownload','arduinoRefresh']){
+  const el=document.getElementById(id);if(el)el.style.display=(!uno||expanded)?'':'none';
+ }
+ const btn=document.getElementById('simuplcUnoProgramBtn');
+ if(btn)btn.style.display=uno?'':'none';
+}
+document.addEventListener('click',function(event){
+ if(event.target&&event.target.closest&&event.target.closest('#arduinoRefresh'))resetPreparedFirmware();
+},true);
+document.addEventListener('change',function(event){
+ if(event.target&&event.target.closest&&event.target.closest('#arduinoBoardSelect,#mcuPinsPanel,#arduinoPins,#arduinoModeBox'))resetPreparedFirmware();
+},true);
+function resetPreparedFirmware(){
+ pendingFirmware=null;
+ const btn=document.getElementById('simuplcUnoProgramBtn');
+ if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.2-local-wasm-usb-gesture'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.3-local-wasm-modal'});
 })(window);
