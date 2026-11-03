@@ -738,9 +738,40 @@
     }
   }
 
+  // Windows: Web Serial necesita el selector COM fuera del modo fullscreen.
+  // No aplicar en Android, donde WebUSB/OTG ya funciona.
+  let restoreFullscreenAfterArduino = false;
+  function isWindowsArduinoPC() {
+    return /Windows/i.test(navigator.userAgent || '') && !!navigator.serial;
+  }
   function openModalStable() {
+    if (isWindowsArduinoPC()) {
+      restoreFullscreenAfterArduino = !!document.fullscreenElement;
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(function (err) {
+          console.warn('[SimuPLC] No se pudo salir de fullscreen para Arduino:', err);
+        });
+      }
+    }
     if (typeof global.openArduinoModal === 'function') global.openArduinoModal();
     setTimeout(function () { refreshAll(false); }, 60);
+  }
+  // La restauración se intenta solo con el clic real del usuario al cerrar.
+  function installArduinoFullscreenClose() {
+    global.addEventListener('click', function (event) {
+      if (!isWindowsArduinoPC() || !restoreFullscreenAfterArduino) return;
+      const close = event.target && event.target.closest && event.target.closest('#arduinoClose');
+      if (!close) return;
+      restoreFullscreenAfterArduino = false;
+      // Chrome puede rechazar fullscreen cuando el gesto de usuario ya fue consumido.
+      // No impedir que el modal cierre en ese caso.
+      try {
+        const root = document.documentElement;
+        if (!document.fullscreenElement && root.requestFullscreen) {
+          root.requestFullscreen().catch(function () {});
+        }
+      } catch (_) {}
+    }, { capture: true });
   }
 
   function installCaptureHandlers() {
@@ -830,6 +861,7 @@
 
   function init() {
     installCaptureHandlers();
+    installArduinoFullscreenClose();
     observeModal();
     ensureBoardOptions();
   }
