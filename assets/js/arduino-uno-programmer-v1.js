@@ -67,9 +67,9 @@ async function resetAndOpen(port){
  try{await port.open({baudRate:115200,dataBits:8,stopBits:1,parity:'none',flowControl:'none'});}catch(e){try{await port.close();}catch(_){}await port.open({baudRate:115200,dataBits:8,stopBits:1,parity:'none',flowControl:'none'});}
  if(port.setSignals){try{await port.setSignals({dataTerminalReady:false,requestToSend:false});}catch(_){}await delay(120);try{await port.setSignals({dataTerminalReady:true,requestToSend:false});}catch(_){}}await delay(450);
 }
-async function flashHex(hexText){
+async function flashHex(hexText,selectedPort){
  const fw=parseHex(hexText);if(fw.length>32256)throw new Error('El programa supera la memoria Flash disponible del Arduino UNO.');
- const sel=await requestPort(),port=sel.port;await resetAndOpen(port);const writer=port.writable.getWriter(),reader=port.readable.getReader();
+ const sel=selectedPort?{port:selectedPort,kind:'native'}:await requestPort(),port=sel.port;await resetAndOpen(port);const writer=port.writable.getWriter(),reader=port.readable.getReader();
  const write=async a=>writer.write(new Uint8Array(a));let rx=[];
  async function need(n,timeout=1800){const end=Date.now()+timeout;while(rx.length<n){const left=end-Date.now();if(left<=0)throw new Error('Arduino UNO no respondió al bootloader.');const p=reader.read();const t=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Tiempo de espera del bootloader agotado.')),left));const r=await Promise.race([p,t]);if(r.done)throw new Error('Puerto USB cerrado.');rx.push(...r.value);}return rx.splice(0,n);}
  async function cmd(bytes,resp=2){await write(bytes);const r=await need(resp);if(r[0]!==0x14||r[r.length-1]!==0x10)throw new Error('Respuesta STK500 inesperada.');return r;}
@@ -81,6 +81,7 @@ async function flashHex(hexText){
 }
 async function compileGenerated(){const src=await sketch();const out=await compile(src);toast('✅ Código generado por SimuPLC compilado correctamente ('+(out.flashBytes||'?')+' bytes).');return out;}
 let pendingFirmware=null;
+let pendingWindowsPort=null;
 async function program(){
  const btn=document.getElementById('simuplcUnoProgramBtn');
  if(btn&&btn.disabled)return;
@@ -98,9 +99,24 @@ async function program(){
   // Esta segunda pulsación es el gesto del usuario exigido por Chrome para solicitar WebUSB.
   // No realizar imports ni compilación asíncrona antes de requestDevice().
   const hex=pendingFirmware;
-  toast(isAndroid()?'Selecciona el Arduino UNO conectado por USB/OTG…':'Windows: selecciona el puerto COM del Arduino en la ventana del navegador…');
-  await flashHex(hex);
+  if(!isAndroid()&&!pendingWindowsPort){
+   // Solicitud directa durante el clic, sin compilación, imports ni operaciones asíncronas previas.
+   if(!navigator.serial)throw new Error('Web Serial no está disponible. Utiliza Chrome o Edge en Windows.');
+   const chooser=navigator.serial.requestPort();
+   toast('Selecciona Arduino UNO (COM6 u otro COM) y confirma la conexión…');
+   try{pendingWindowsPort=await chooser;}
+   catch(e){
+    if(e&&(e.name==='NotFoundError'||/No port selected/i.test(e.message||'')))throw new Error('No se seleccionó un puerto. Pulsa el botón de nuevo, haz clic en Arduino UNO (COM) y luego en Conectar.');
+    throw e;
+   }
+   if(btn){btn.textContent='⬆ Transferir programa al Arduino';btn.title='Transferir el firmware compilado al puerto COM autorizado';}
+   toast('✅ Puerto COM autorizado. Pulsa «Transferir programa al Arduino» para iniciar la carga.');
+   return;
+  }
+  toast(isAndroid()?'Selecciona el Arduino UNO conectado por USB/OTG…':'Conectando y programando el Arduino por el puerto COM autorizado…');
+  await flashHex(hex,pendingWindowsPort);
   pendingFirmware=null;
+  pendingWindowsPort=null;
   if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila el código generado por SimuPLC y prepara la conexión USB';}
  }catch(e){
   const message=e&&e.message?e.message:String(e);
@@ -151,9 +167,10 @@ document.addEventListener('change',function(event){
 },true);
 function resetPreparedFirmware(){
  pendingFirmware=null;
+ pendingWindowsPort=null;
  const btn=document.getElementById('simuplcUnoProgramBtn');
  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.4-local-wasm-com-help'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.5-windows-separate-port-selection'});
 })(window);
