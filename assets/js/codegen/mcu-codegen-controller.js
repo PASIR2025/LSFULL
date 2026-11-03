@@ -780,6 +780,7 @@
       restoreFullscreenAfterHmi = false;
     }
     hmiConnectionDialog = dialog;
+    if (dialog) updateHmiFullscreenDiagnostic();
     if (dialog && !dialog.__simuplcWindowsFullscreenEventsProtected) {
       dialog.__simuplcWindowsFullscreenEventsProtected = true;
       // Conservar los clics y handlers de los botones del modal,
@@ -824,10 +825,29 @@
       }
     }, true);
   }
+  let hmiFullscreenBlockedRequests = 0;
+  function updateHmiFullscreenDiagnostic() {
+    if (!isWindowsArduinoPC()) return;
+    const dialog = visibleHmiConnectionDialog();
+    if (!dialog) return;
+    let label = dialog.querySelector('#simuplcHmiFullscreenDiagnostic');
+    if (!label) {
+      label = document.createElement('div');
+      label.id = 'simuplcHmiFullscreenDiagnostic';
+      label.style.cssText = 'font:12px Arial;padding:5px 9px;background:#fff3cd;color:#4a3500;border:1px solid #e3c46c;border-radius:6px;margin:6px 0;position:relative;z-index:2';
+      const title = Array.from(dialog.querySelectorAll('h1,h2,h3,h4,[role="heading"]')).find(function (h) { return /Comunicación con Arduino/i.test(h.textContent || ''); });
+      if (title && title.parentElement) title.parentElement.appendChild(label);
+      else dialog.prepend(label);
+    }
+    label.textContent = 'Diagnóstico PC: modal detectado · protección ' + (windowsHmiActive ? 'ACTIVA' : 'INACTIVA') + ' · pantalla completa ' + (document.fullscreenElement ? 'SÍ' : 'NO') + ' · solicitudes bloqueadas ' + hmiFullscreenBlockedRequests;
+  }
   const originalRequestFullscreen = Element.prototype.requestFullscreen;
   if (typeof originalRequestFullscreen === 'function') {
     Element.prototype.requestFullscreen = function () {
-      if (isWindowsArduinoPC() && (windowsArduinoModalActive || windowsHmiActive || visibleHmiConnectionDialog())) return Promise.resolve();
+      if (isWindowsArduinoPC() && (windowsArduinoModalActive || windowsHmiActive || visibleHmiConnectionDialog())) {
+        if (visibleHmiConnectionDialog()) { hmiFullscreenBlockedRequests++; updateHmiFullscreenDiagnostic(); }
+        return Promise.resolve();
+      }
       return originalRequestFullscreen.apply(this, arguments);
     };
   }
