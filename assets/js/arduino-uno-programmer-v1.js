@@ -117,6 +117,7 @@ async function program(){
 function chooseWindowsPortDirect(){
  // Misma llamada directa usada por diagnostico_com_windows.html.
  // Ejecutarla como primera operación del clic del botón, sin awaits previos.
+ const context={active:!!navigator.userActivation?.isActive,fullscreen:!!document.fullscreenElement,frame:window.top!==window.self,policy:document.permissionsPolicy?.allowsFeature?.('serial')??document.featurePolicy?.allowsFeature?.('serial')??'unknown'};
  const chooser=navigator.serial.requestPort();
  const btn=document.getElementById('simuplcUnoComBtn');
  if(btn)btn.disabled=true;
@@ -128,7 +129,7 @@ function chooseWindowsPortDirect(){
    const upload=document.getElementById('simuplcUnoProgramBtn');
    if(upload){upload.textContent='⬆ Transferir programa al Arduino';upload.disabled=false;}
  }).catch(e=>{
-   toast('❌ '+(e&&e.message?e.message:e)+'. Selecciona Arduino UNO en la lista y confirma.',true);
+   toast('❌ '+(e&&e.name?e.name+': ':'')+(e&&e.message?e.message:e)+' | Diagnóstico: '+JSON.stringify(context),true);
  }).finally(()=>{if(btn)btn.disabled=false;});
 }
 function install(){
