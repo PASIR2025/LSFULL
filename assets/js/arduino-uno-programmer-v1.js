@@ -92,7 +92,7 @@ async function program(){
    toast('Código de SimuPLC recibido. Compilando localmente…');
    const out=await compile(src);
    pendingFirmware=out.hex;
-   if(btn){btn.textContent=isAndroid()?'🔌 Conectar Arduino por USB/OTG':'🔌 Seleccionar puerto COM y programar';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
+   if(btn){btn.textContent=isAndroid()?'🔌 Conectar Arduino por USB/OTG':'⚡ Programar Arduino UNO';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
    toast('✅ Compilación correcta ('+(out.flashBytes||'?')+' bytes). Ahora pulsa «Conectar Arduino por USB/OTG» para autorizar el dispositivo y programarlo.');
    return;
   }
@@ -114,20 +114,27 @@ async function program(){
   // Si falló el permiso USB, conservar HEX para reintentar con un nuevo toque.
  }finally{if(btn)btn.disabled=false;}
 }
-function chooseWindowsPortDirect(){
- // Misma llamada directa usada por diagnostico_com_windows.html.
- // Ejecutarla como primera operación del clic del botón, sin awaits previos.
+async function chooseWindowsPortDirect(){
+ // Chrome no muestra el selector Web Serial mientras document.fullscreenElement está activo.
+ // Salir de fullscreen consume el gesto de usuario; por eso se requiere un segundo clic explícito.
+ const btn=document.getElementById('simuplcUnoComBtn');
+ if(btn&&btn.disabled)return;
+ if(document.fullscreenElement){
+   try{
+     await document.exitFullscreen();
+     toast('✅ Se salió temporalmente de pantalla completa. Pulsa otra vez «Elegir puerto COM» para abrir el selector de Chrome.');
+   }catch(e){toast('❌ No se pudo salir de pantalla completa: '+(e.message||e),true);}
+   return;
+ }
+ // Esta llamada debe ser la primera solicitud de permisos del clic, sin awaits previos.
  const context={active:!!navigator.userActivation?.isActive,fullscreen:!!document.fullscreenElement,frame:window.top!==window.self,policy:document.permissionsPolicy?.allowsFeature?.('serial')??document.featurePolicy?.allowsFeature?.('serial')??'unknown'};
  const chooser=navigator.serial.requestPort();
- const btn=document.getElementById('simuplcUnoComBtn');
  if(btn)btn.disabled=true;
  toast('Selecciona Arduino UNO (COM) en la ventana de Chrome y pulsa Conectar…');
  chooser.then(port=>{
    pendingWindowsPort=port;
    const info=port.getInfo?port.getInfo():{};
-   toast('✅ Puerto COM autorizado ('+(info.usbVendorId||'USB')+'). Ahora pulsa «Transferir programa».');
-   const upload=document.getElementById('simuplcUnoProgramBtn');
-   if(upload){upload.textContent='⬆ Transferir programa al Arduino';upload.disabled=false;}
+   toast('✅ Puerto COM autorizado ('+(info.usbVendorId||'USB')+'). Ahora pulsa «Programar Arduino UNO».');
  }).catch(e=>{
    toast('❌ '+(e&&e.name?e.name+': ':'')+(e&&e.message?e.message:e)+' | Diagnóstico: '+JSON.stringify(context),true);
  }).finally(()=>{if(btn)btn.disabled=false;});
@@ -190,5 +197,5 @@ function resetPreparedFirmware(){
  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.7-direct-com-chooser'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.8-exit-fullscreen-before-com'});
 })(window);
