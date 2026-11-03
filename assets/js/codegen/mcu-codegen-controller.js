@@ -775,11 +775,10 @@
     if (dialog && !windowsHmiActive) {
       windowsHmiActive = true;
       restoreFullscreenAfterHmi = !!document.fullscreenElement;
-    } else if (!dialog && windowsHmiActive) {
-      windowsHmiActive = false;
-      restoreFullscreenAfterHmi = false;
     }
-    hmiConnectionDialog = dialog;
+    // No desactivar la protección por una detección fallida del modal.
+    // Solo el cierre explícito de la ventana debe desactivarla.
+    if (dialog) hmiConnectionDialog = dialog;
     if (dialog) updateHmiFullscreenDiagnostic();
     if (dialog && !dialog.__simuplcWindowsFullscreenEventsProtected) {
       dialog.__simuplcWindowsFullscreenEventsProtected = true;
@@ -810,14 +809,14 @@
   }
   function installHmiDialogCloseRestore() {
     document.addEventListener('click', function (event) {
-      if (!windowsHmiActive || !restoreFullscreenAfterHmi || !hmiConnectionDialog) return;
+      if (!windowsHmiActive) return;
       const target = event.target;
-      if (!target || !hmiConnectionDialog.contains(target)) return;
+      if (!target) return;
       const button = target.closest('button,[role="button"]');
       if (!button) return;
       const label = [button.getAttribute('aria-label'), button.getAttribute('title'), button.textContent].filter(Boolean).join(' ').trim();
       const isClose = /^(×|✕|✖|x)$/i.test(label) || /cerrar|close/i.test(label) || (button.querySelector('svg') && button.getBoundingClientRect().top < hmiConnectionDialog.getBoundingClientRect().top + 110 && button.getBoundingClientRect().right > hmiConnectionDialog.getBoundingClientRect().right - 115);
-      if (!isClose) return;
+      if (!isClose || !hmiConnectionDialog || !hmiConnectionDialog.contains(button)) return;
       windowsHmiActive = false;
       restoreFullscreenAfterHmi = false;
       if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
