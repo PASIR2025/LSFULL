@@ -740,12 +740,29 @@
 
   // Windows: Web Serial necesita el selector COM fuera del modo fullscreen.
   // No aplicar en Android, donde WebUSB/OTG ya funciona.
+  // Protección temporal: mientras el modal MCU esté abierto en Windows,
+  // ignorar solicitudes de fullscreen originadas por los controles globales.
+  // No intercepta clics ni modifica Web Serial / WebUSB.
+  let windowsArduinoModalActive = false;
+  const originalRequestFullscreen = Element.prototype.requestFullscreen;
+  if (typeof originalRequestFullscreen === 'function') {
+    Element.prototype.requestFullscreen = function () {
+      if (windowsArduinoModalActive && isWindowsArduinoPC()) return Promise.resolve();
+      return originalRequestFullscreen.apply(this, arguments);
+    };
+  }
+  document.addEventListener('fullscreenchange', function () {
+    if (windowsArduinoModalActive && isWindowsArduinoPC() && document.fullscreenElement) {
+      document.exitFullscreen().catch(function () {});
+    }
+  });
   let restoreFullscreenAfterArduino = false;
   function isWindowsArduinoPC() {
     return /Windows/i.test(navigator.userAgent || '') && !!navigator.serial;
   }
   function openModalStable() {
     if (isWindowsArduinoPC()) {
+      windowsArduinoModalActive = true;
       restoreFullscreenAfterArduino = !!document.fullscreenElement;
       if (document.fullscreenElement) {
         document.exitFullscreen().catch(function (err) {
@@ -759,9 +776,11 @@
   // La restauración se intenta solo con el clic real del usuario al cerrar.
   function installArduinoFullscreenClose() {
     global.addEventListener('click', function (event) {
-      if (!isWindowsArduinoPC() || !restoreFullscreenAfterArduino) return;
+      if (!isWindowsArduinoPC()) return;
       const close = event.target && event.target.closest && event.target.closest('#arduinoClose');
       if (!close) return;
+      windowsArduinoModalActive = false;
+      if (!restoreFullscreenAfterArduino) return;
       restoreFullscreenAfterArduino = false;
       // Chrome puede rechazar fullscreen cuando el gesto de usuario ya fue consumido.
       // No impedir que el modal cierre en ese caso.
