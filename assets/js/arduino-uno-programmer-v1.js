@@ -13,7 +13,7 @@ function toast(msg,err){
   const bar=panel.querySelector('[data-bar]');
   const m=String(msg);
   if(heading)heading.textContent=err?'Error':/programado correctamente/i.test(m)?'Programación completada':/compilación correcta|compilado correctamente/i.test(m)?'Compilación completada':/compilando/i.test(m)?'Compilando código…':/programando|sincronizando/i.test(m)?'Programando Arduino…':'Estado del programador';
-  const pct=m.match(/(\\d{1,3})%/);
+  const pct=m.match(/(\d{1,3})%/);
   if(bar){bar.style.width=pct?Math.min(100,+pct[1])+'%':/correctamente|correcta/i.test(m)?'100%':/compilando/i.test(m)?'35%':'12%';bar.style.background=err?'#dc2626':/correctamente|correcta/i.test(m)?'#16a34a':'#2563eb';}
  }
  console[err?'error':'log']('[UNO]',msg);
