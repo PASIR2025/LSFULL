@@ -3,7 +3,21 @@
 const COMPILER='https://cdn.jsdelivr.net/npm/@horang-corp/avr-gcc-wasm@0.2.0/+esm';
 const COMPILER_ASSETS='https://cdn.jsdelivr.net/npm/@horang-corp/avr-gcc-wasm@0.2.0/';
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
-function toast(msg,err){let el=document.getElementById('simuplcUnoProgramStatus');if(el){el.textContent=msg;el.style.color=err?'#b91c1c':'#166534';}console[err?'error':'log']('[UNO]',msg);}
+function toast(msg,err){
+ const el=document.getElementById('simuplcUnoProgramStatus');
+ if(el){el.textContent=msg;el.style.color=err?'#b91c1c':'#164e63';}
+ const panel=document.getElementById('simuplcUnoProgress');
+ if(panel){
+  panel.hidden=false;
+  const heading=panel.querySelector('[data-phase]');
+  const bar=panel.querySelector('[data-bar]');
+  const m=String(msg);
+  if(heading)heading.textContent=err?'Error':/programado correctamente/i.test(m)?'Programación completada':/compilación correcta|compilado correctamente/i.test(m)?'Compilación completada':/compilando/i.test(m)?'Compilando código…':/programando|sincronizando/i.test(m)?'Programando Arduino…':'Estado del programador';
+  const pct=m.match(/(\\d{1,3})%/);
+  if(bar){bar.style.width=pct?Math.min(100,+pct[1])+'%':/correctamente|correcta/i.test(m)?'100%':/compilando/i.test(m)?'35%':'12%';bar.style.background=err?'#dc2626':/correctamente|correcta/i.test(m)?'#16a34a':'#2563eb';}
+ }
+ console[err?'error':'log']('[UNO]',msg);
+}
 function isAndroid(){return /Android/i.test(navigator.userAgent||'');}
 
 // Toma el código generado internamente por SimuPLC. No usa portapapeles.
@@ -82,6 +96,7 @@ async function flashHex(hexText,selectedPort){
 async function compileGenerated(){const src=await sketch();const out=await compile(src);toast('✅ Código generado por SimuPLC compilado correctamente ('+(out.flashBytes||'?')+' bytes).');return out;}
 let pendingFirmware=null;
 let pendingWindowsPort=null;
+function updateProgramLabel(){const btn=document.getElementById('simuplcUnoProgramBtn');if(btn){btn.textContent=pendingFirmware?(isAndroid()?'🔌 Programar por USB/OTG':'⚡ Programar Arduino UNO'):'✓ Compilar código';}}
 async function program(){
  const btn=document.getElementById('simuplcUnoProgramBtn');
  if(btn&&btn.disabled)return;
@@ -92,7 +107,7 @@ async function program(){
    toast('Código de SimuPLC recibido. Compilando localmente…');
    const out=await compile(src);
    pendingFirmware=out.hex;
-   if(btn){btn.textContent=isAndroid()?'🔌 Conectar Arduino por USB/OTG':'⚡ Programar Arduino UNO';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
+   updateProgramLabel();
    toast('✅ Compilación correcta ('+(out.flashBytes||'?')+' bytes). Ahora pulsa «Conectar Arduino por USB/OTG» para autorizar el dispositivo y programarlo.');
    return;
   }
@@ -107,7 +122,7 @@ async function program(){
   await flashHex(hex,pendingWindowsPort);
   pendingFirmware=null;
   pendingWindowsPort=null;
-  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila el código generado por SimuPLC y prepara la conexión USB';}
+  updateProgramLabel();
  }catch(e){
   const message=e&&e.message?e.message:String(e);
   toast('❌ '+message,true);
@@ -144,7 +159,7 @@ function install(){
  const code=document.getElementById('arduinoCode');
  if(!actions||!code)return;
  if(!document.getElementById('simuplcUnoProgramBtn')){
-  const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';btn.addEventListener('click',program);actions.appendChild(btn);
+  const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='✓ Compilar código';btn.title='Compilar localmente el programa generado por SimuPLC';btn.addEventListener('click',program);actions.appendChild(btn);
   const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.setAttribute('role','status');s.setAttribute('aria-live','polite');s.textContent='Listo para compilar y programar el Arduino UNO.';actions.appendChild(s);
  }
  if(!document.getElementById('simuplcUnoComBtn')){
@@ -166,7 +181,37 @@ function install(){
    updateCodeVisibility();
   });
  }
+ installModernUnoUI(actions);
+ updateProgramLabel();
  updateCodeVisibility();
+}
+function installModernUnoUI(actions){
+ if(!document.getElementById('simuplcUnoModernStyles')){
+  const style=document.createElement('style');style.id='simuplcUnoModernStyles';
+  style.textContent='#simuplcUnoProgress{padding:15px 18px;margin:12px 0;border:1px solid #bfdbfe;border-radius:15px;background:#eff6ff;color:#16324d}#simuplcUnoProgress[hidden]{display:none!important}#simuplcUnoProgress [data-phase]{font-weight:850;font-size:17px}#simuplcUnoProgress .track{height:9px;background:#dbeafe;border-radius:30px;overflow:hidden;margin:12px 0}#simuplcUnoProgress [data-bar]{height:100%;width:12%;background:#2563eb;border-radius:30px;transition:width .25s}#simuplcUnoProgramStatus{font-size:13px!important;line-height:1.5!important;overflow-wrap:anywhere}#simuplcUnoAdvanced{padding:10px 14px;border:1px solid #dbe4ef;border-radius:14px;margin:12px 0;background:#f8fafc}#simuplcUnoAdvanced>summary{font-weight:800;cursor:pointer;color:#244567;padding:5px}#simuplcUnoProgramBtn{border-radius:12px!important;min-height:46px!important;font-weight:800!important}';
+  document.head.appendChild(style);
+ }
+ if(!document.getElementById('simuplcUnoProgress')){
+  const panel=document.createElement('section');panel.id='simuplcUnoProgress';panel.hidden=true;panel.setAttribute('role','status');
+  panel.innerHTML='<div data-phase>Estado del programador</div><div class="track"><div data-bar></div></div>';
+  const status=document.getElementById('simuplcUnoProgramStatus');
+  if(status){panel.appendChild(status);actions.parentNode.insertBefore(panel,actions);}
+ }
+ if(!document.getElementById('simuplcUnoAdvanced')){
+  const heading=Array.from(document.querySelectorAll('h2,h3,h4')).find(el=>/Polaridad de salidas/i.test(el.textContent||''));
+  if(heading){
+   let section=heading;
+   for(let i=0;i<4&&section.parentElement;i++){
+    if(section.parentElement.querySelector('select')&&section.parentElement.querySelector('button')){section=section.parentElement;break;}
+    section=section.parentElement;
+   }
+   if(section&&section!==document.body&&!section.contains(actions)&&section.parentNode){
+    const details=document.createElement('details');details.id='simuplcUnoAdvanced';
+    const summary=document.createElement('summary');summary.textContent='⚙ Configuración avanzada · Polaridad de salidas';details.appendChild(summary);
+    section.parentNode.insertBefore(details,section);details.appendChild(section);
+   }
+  }
+ }
 }
 function updateCodeVisibility(){
  const code=document.getElementById('arduinoCode'),toggle=document.getElementById('simuplcViewCodeBtn');
@@ -194,7 +239,7 @@ function resetPreparedFirmware(){
  pendingFirmware=null;
  pendingWindowsPort=null;
  const btn=document.getElementById('simuplcUnoProgramBtn');
- if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
+ updateProgramLabel();
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.9-com-stop-fullscreen-bubbling'});
