@@ -100,28 +100,7 @@ async function program(){
   // No realizar imports ni compilación asíncrona antes de requestDevice().
   const hex=pendingFirmware;
   if(!isAndroid()&&!pendingWindowsPort){
-   // Solicitud directa durante el clic, sin compilación, imports ni operaciones asíncronas previas.
-   if(!navigator.serial)throw new Error('Web Serial no está disponible. Utiliza Chrome o Edge en Windows.');
-   // El permiso del diagnóstico pertenece al mismo origen GitHub Pages.
-   // Reutilizar puertos previamente autorizados evita un selector bloqueado por la interfaz.
-   const chooser=navigator.serial.requestPort();
-   // La solicitud anterior se inicia durante el gesto; si se cancela, buscar permisos previos.
-   try{pendingWindowsPort=await chooser;}
-   catch(e){
-    const ports=await navigator.serial.getPorts();
-    if(ports.length===1)pendingWindowsPort=ports[0];
-    else if(ports.length>1){
-      const uno=ports.filter(p=>{const i=p.getInfo();return i.usbVendorId===9025&&i.usbProductId===67;});
-      if(uno.length===1)pendingWindowsPort=uno[0];
-    }
-    if(!pendingWindowsPort){
-      if(ports.length>1)throw new Error('Hay varios puertos COM autorizados. Desconecta los otros dispositivos serie y vuelve a intentar.');
-      if(e&&(e.name==='NotFoundError'||/No port selected/i.test(e.message||'')))throw new Error('No se seleccionó un puerto. Abre el diagnóstico COM, selecciona Arduino UNO y pulsa Conectar; después vuelve a SimuPLC.');
-      throw e;
-    }
-   }
-   if(btn){btn.textContent='⬆ Transferir programa al Arduino';btn.title='Transferir el firmware compilado al puerto COM autorizado';}
-   toast('✅ Puerto COM autorizado. Pulsa «Transferir programa al Arduino» para iniciar la carga.');
+   toast('Selecciona primero el Arduino con el botón «Elegir puerto COM» y después transfiere el programa.',true);
    return;
   }
   toast(isAndroid()?'Selecciona el Arduino UNO conectado por USB/OTG…':'Conectando y programando el Arduino por el puerto COM autorizado…');
@@ -135,6 +114,23 @@ async function program(){
   // Si falló el permiso USB, conservar HEX para reintentar con un nuevo toque.
  }finally{if(btn)btn.disabled=false;}
 }
+function chooseWindowsPortDirect(){
+ // Misma llamada directa usada por diagnostico_com_windows.html.
+ // Ejecutarla como primera operación del clic del botón, sin awaits previos.
+ const chooser=navigator.serial.requestPort();
+ const btn=document.getElementById('simuplcUnoComBtn');
+ if(btn)btn.disabled=true;
+ toast('Selecciona Arduino UNO (COM) en la ventana de Chrome y pulsa Conectar…');
+ chooser.then(port=>{
+   pendingWindowsPort=port;
+   const info=port.getInfo?port.getInfo():{};
+   toast('✅ Puerto COM autorizado ('+(info.usbVendorId||'USB')+'). Ahora pulsa «Transferir programa».');
+   const upload=document.getElementById('simuplcUnoProgramBtn');
+   if(upload){upload.textContent='⬆ Transferir programa al Arduino';upload.disabled=false;}
+ }).catch(e=>{
+   toast('❌ '+(e&&e.message?e.message:e)+'. Selecciona Arduino UNO en la lista y confirma.',true);
+ }).finally(()=>{if(btn)btn.disabled=false;});
+}
 function install(){
  const actions=document.getElementById('arduinoActions');
  const code=document.getElementById('arduinoCode');
@@ -142,6 +138,14 @@ function install(){
  if(!document.getElementById('simuplcUnoProgramBtn')){
   const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';btn.addEventListener('click',program);actions.appendChild(btn);
   const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.setAttribute('role','status');s.setAttribute('aria-live','polite');s.textContent='Listo para compilar y programar el Arduino UNO.';actions.appendChild(s);
+ }
+ if(!document.getElementById('simuplcUnoComBtn')){
+  const com=document.createElement('button');
+  com.id='simuplcUnoComBtn';com.type='button';com.textContent='🔌 Elegir puerto COM';
+  com.style.cssText='padding:11px 15px;margin:6px;border:1px solid #0c8559;border-radius:10px;background:#e8fff4;color:#075c3b;font-weight:800;cursor:pointer;';
+  // Listener independiente, invoca requestPort sin ningún paso asíncrono previo.
+  com.addEventListener('click',chooseWindowsPortDirect);
+  actions.insertBefore(com,document.getElementById('simuplcUnoProgramBtn'));
  }
  if(!document.getElementById('simuplcViewCodeBtn')){
   const toggle=document.createElement('button');toggle.id='simuplcViewCodeBtn';toggle.type='button';toggle.textContent='👁 Ver código C++';toggle.setAttribute('aria-expanded','false');
@@ -169,6 +173,8 @@ function updateCodeVisibility(){
  }
  const btn=document.getElementById('simuplcUnoProgramBtn');
  if(btn)btn.style.display=uno?'':'none';
+ const com=document.getElementById('simuplcUnoComBtn');
+ if(com)com.style.display=uno&&!isAndroid()&&!!navigator.serial?'':'none';
 }
 document.addEventListener('click',function(event){
  if(event.target&&event.target.closest&&event.target.closest('#arduinoRefresh'))resetPreparedFirmware();
@@ -183,5 +189,5 @@ function resetPreparedFirmware(){
  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.6-windows-reuse-authorized-com'});
+global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.7-direct-com-chooser'});
 })(window);
