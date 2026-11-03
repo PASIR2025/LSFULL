@@ -10,13 +10,9 @@
 </head>
 <body>
 <main class="card">
-<h1>⚡ SimuPLC — Arduino UNO local</h1>
+<h1>⚡ SimuPLC — Arduino UNO local V2</h1>
 <p class="sub">Prueba aislada: compila en este dispositivo y programa el UNO por USB. No usa Cloud Run.</p>
-<div class="grid">
- <div class="item"><small>WebAssembly</small><b id="wasm">—</b></div>
- <div class="item"><small>Web Serial</small><b id="serial">—</b></div>
- <div class="item"><small>Destino</small><b>Arduino UNO R3 / ATmega328P</b></div>
-</div>
+<div class="grid"><div class="item"><small>WebAssembly</small><b id="wasm">—</b></div><div class="item"><small>Web Serial</small><b id="serial">—</b></div><div class="item"><small>Destino</small><b>Arduino UNO R3 / ATmega328P</b></div></div>
 <label for="source"><b>Código Arduino</b></label>
 <textarea id="source">#include <Arduino.h>
 
@@ -30,14 +26,9 @@ void loop() {
   digitalWrite(LED_BUILTIN, LOW);
   delay(500);
 }</textarea>
-<div class="actions">
- <button id="compileBtn">1. Compilar localmente</button>
- <button id="programBtn" disabled>2. Conectar y programar UNO</button>
- <button id="downloadBtn" class="secondary" disabled>Descargar HEX</button>
-</div>
-<div id="status" class="status">Listo para la prueba.</div>
-<pre id="log" class="log"></pre>
-<p class="note">Primera prueba: usa Chrome/Edge actualizado y un Arduino UNO R3 conectado por USB. En Android usa OTG. El navegador pedirá permiso para seleccionar el puerto.</p>
+<div class="actions"><button id="compileBtn">1. Compilar localmente</button><button id="programBtn" disabled>2. Conectar y programar UNO</button><button id="downloadBtn" class="secondary" disabled>Descargar HEX</button></div>
+<div id="status" class="status">Listo para la prueba V2.</div><pre id="log" class="log"></pre>
+<p class="note">V2 evita crear el Worker del compilador desde otro dominio. La compilación sigue ocurriendo localmente en el navegador, sin Cloud Run.</p>
 </main>
 <script type="module">
 const $=id=>document.getElementById(id);
@@ -47,52 +38,10 @@ const FLASHER='https://cdn.jsdelivr.net/npm/webserial-flasher@1.0.1/+esm';
 let hex='';
 function log(s){$('log').textContent+='['+new Date().toLocaleTimeString()+'] '+s+'\n';$('log').scrollTop=$('log').scrollHeight}
 function status(s,err=false){$('status').textContent=s;$('status').className='status'+(err?' error':'')}
-$('wasm').textContent=typeof WebAssembly==='object'?'Disponible':'No disponible';
-$('serial').textContent=navigator.serial?'Disponible':'No disponible';
-if(!window.isSecureContext) status('Esta prueba necesita HTTPS.',true);
-
-$('compileBtn').addEventListener('click',async()=>{
-  $('compileBtn').disabled=true;$('programBtn').disabled=true;$('downloadBtn').disabled=true;hex='';
-  try{
-    status('Cargando compilador AVR WebAssembly…');log('Importando compilador local.');
-    const {compile}=await import(COMPILER);
-    status('Compilando para Arduino UNO…');
-    const result=await compile({source:$('source').value,sensors:[],assetsBase:COMPILER_ASSETS});
-    if(!result || !result.hex) throw new Error('El compilador no devolvió un archivo HEX.');
-    hex=result.hex;
-    if(result.fitsTarget===false) throw new Error('El programa excede la memoria disponible del Arduino UNO.');
-    log('Compilación terminada. HEX: '+hex.length+' caracteres.');
-    status('✅ Compilación local correcta. Ya puedes programar el Arduino.');
-    $('programBtn').disabled=!navigator.serial;
-    $('downloadBtn').disabled=false;
-    if(!navigator.serial) log('Web Serial no está disponible en este navegador. El HEX sí fue generado localmente.');
-  }catch(e){console.error(e);log('ERROR COMPILACIÓN: '+(e?.message||e));status('❌ '+(e?.message||e),true)}
-  finally{$('compileBtn').disabled=false}
-});
-
-$('programBtn').addEventListener('click',async()=>{
-  if(!hex){status('Primero compila el programa.',true);return}
-  let transport;
-  try{
-    $('programBtn').disabled=true;status('Selecciona el Arduino UNO en el cuadro del navegador…');
-    const {STK500,WebSerialTransport,BOARDS}=await import(FLASHER);
-    const board=BOARDS['arduino-uno-r3']||BOARDS['arduino-uno'];
-    transport=new WebSerialTransport();
-    await transport.requestPort();
-    status('Abriendo Arduino UNO…');
-    await transport.open(board.baudRate);
-    const stk=new STK500(transport,board);
-    status('Programando Arduino UNO…');
-    await stk.bootload(hex,(phase,pct)=>{status('Programando: '+phase+' '+Math.round(pct||0)+'%');log(phase+' '+Math.round(pct||0)+'%')});
-    status('✅ Arduino UNO programado correctamente.');log('PROGRAMACIÓN COMPLETADA.');
-  }catch(e){console.error(e);log('ERROR PROGRAMACIÓN: '+(e?.message||e));status('❌ '+(e?.message||e),true)}
-  finally{try{if(transport)await transport.close()}catch(e){} $('programBtn').disabled=!hex||!navigator.serial}
-});
-
-$('downloadBtn').addEventListener('click',()=>{
-  if(!hex)return;
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([hex],{type:'text/plain'}));a.download='simuplc_uno.hex';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-});
+$('wasm').textContent=typeof WebAssembly==='object'?'Disponible':'No disponible';$('serial').textContent=navigator.serial?'Disponible':'No disponible';if(!window.isSecureContext)status('Esta prueba necesita HTTPS.',true);
+$('compileBtn').addEventListener('click',async()=>{$('compileBtn').disabled=true;$('programBtn').disabled=true;$('downloadBtn').disabled=true;hex='';try{status('Cargando compilador AVR WebAssembly…');log('V2: cargando compilador sin Worker externo.');const {buildFirmware}=await import(COMPILER);status('Compilando localmente para Arduino UNO…');const result=await buildFirmware({source:$('source').value,sensors:[],assetsBase:COMPILER_ASSETS});if(!result||!result.hex)throw new Error('El compilador no devolvió un archivo HEX.');hex=result.hex;if(result.fitsTarget===false)throw new Error('El programa excede la memoria disponible del Arduino UNO.');log('Compilación terminada. Flash: '+(result.flashBytes||'?')+' bytes.');status('✅ Compilación local correcta. Ya puedes programar el Arduino.');$('programBtn').disabled=!navigator.serial;$('downloadBtn').disabled=false;if(!navigator.serial)log('Web Serial no está disponible. El HEX sí fue generado localmente.');}catch(e){console.error(e);log('ERROR COMPILACIÓN: '+(e?.message||e));status('❌ '+(e?.message||e),true)}finally{$('compileBtn').disabled=false}});
+$('programBtn').addEventListener('click',async()=>{if(!hex){status('Primero compila el programa.',true);return}let transport;try{$('programBtn').disabled=true;status('Selecciona el Arduino UNO…');const {STK500,WebSerialTransport,BOARDS}=await import(FLASHER);const board=BOARDS['arduino-uno-r3']||BOARDS['arduino-uno'];transport=new WebSerialTransport();await transport.requestPort();status('Abriendo Arduino UNO…');await transport.open(board.baudRate);const stk=new STK500(transport,board);status('Programando Arduino UNO…');await stk.bootload(hex,(phase,pct)=>{status('Programando: '+phase+' '+Math.round(pct||0)+'%');log(phase+' '+Math.round(pct||0)+'%')});status('✅ Arduino UNO programado correctamente.');log('PROGRAMACIÓN COMPLETADA.');}catch(e){console.error(e);log('ERROR PROGRAMACIÓN: '+(e?.message||e));status('❌ '+(e?.message||e),true)}finally{try{if(transport)await transport.close()}catch(e){}$('programBtn').disabled=!hex||!navigator.serial}});
+$('downloadBtn').addEventListener('click',()=>{if(!hex)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([hex],{type:'text/plain'}));a.download='simuplc_uno.hex';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
 </script>
 </body>
 </html>
