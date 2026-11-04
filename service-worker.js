@@ -1,5 +1,5 @@
 /* SimuPLC V16 - Service Worker offline-first. */
-const CACHE_NAME = 'simuplc-v25-project-stability';
+const CACHE_NAME = 'simuplc-v26-programmer-refresh';
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -165,5 +165,6 @@ self.addEventListener('fetch', (event) => {
   }
 
   const isNavigation = request.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html');
-  event.respondWith(isNavigation ? networkFirst(request, url) : cacheFirst(request, url));
+  const programmerScript = /\/assets\/js\/(?:arduino-uno-programmer-v1\.js|codegen\/mcu-codegen-controller\.js)$/.test(url.pathname);
+  event.respondWith((isNavigation || programmerScript) ? networkFirst(request, url) : cacheFirst(request, url));
 });
