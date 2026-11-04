@@ -8,12 +8,14 @@ function toast(msg,err){
  if(el){el.textContent=msg;el.style.color=err?'#fecaca':'#e2f3ff';}
  const panel=document.getElementById('simuplcUnoProgress');
  if(panel){
+  // Mostrar solo al iniciar una operación, no al abrir el modal ni al elegir puerto.
+  if(/Compilando|compilando|Sincronizando|Conectando y programando|Selecciona el Arduino UNO conectado|Programando Arduino UNO/.test(String(msg)))panel.hidden=false;
   const title=panel.querySelector('[data-uno-title]'),bar=panel.querySelector('[data-uno-fill]'),pct=panel.querySelector('[data-uno-percent]');
   const m=String(msg),upload=/Programando Arduino UNO…\\s*(\\d+)%/.exec(m);
   const compiled=/Compilación correcta|compilado correctamente/.test(m),finished=/programado correctamente/.test(m);
   const compiling=/Compilando|compilando/.test(m),syncing=/Sincronizando|Conectando y programando|Selecciona el Arduino UNO conectado/.test(m);
   if(title)title.textContent=err?'Error del programador':finished?'Programación completada':upload?'Programando Arduino':compiled?'Compilación correcta':compiling?'Compilando código':syncing?'Conectando Arduino':'Estado del programador';
-  if(bar){bar.style.width=upload?Math.min(100,Number(upload[1]))+'%':finished||compiled?'100%':'0%';bar.style.background=err?'#ef4444':finished||compiled?'#22c55e':'#38bdf8';}
+  if(bar){bar.style.width=upload?Math.min(100,Number(upload[1]))+'%':finished||compiled?'100%':'0%';bar.style.background=err?'#f87171':finished?'#4ade80':upload?'#4ade80':compiled?'#38bdf8':'#38bdf8';}
   if(pct)pct.textContent=upload?upload[1]+'%':finished?'100%':compiled?'Compilado':compiling||syncing?'En proceso':err?'Error':'—';
   panel.style.borderColor=err?'#ef4444':finished||compiled?'#22c55e':'#3779aa';
  }
@@ -154,19 +156,34 @@ async function chooseWindowsPortDirect(){
    toast('❌ '+(e&&e.name?e.name+': ':'')+(e&&e.message?e.message:e)+' | Diagnóstico: '+JSON.stringify(context),true);
  }).finally(()=>{if(btn)btn.disabled=false;});
 }
+function installProgressPresentation(){
+ if(document.getElementById('simuplcUnoProgressVisual'))return;
+ const style=document.createElement('style');
+ style.id='simuplcUnoProgressVisual';
+ style.textContent=[
+  '#arduinoHint{display:none!important}',
+  '#simuplcUnoProgress[hidden]{display:none!important}',
+  '#simuplcUnoProgress{box-shadow:0 6px 20px rgba(15,53,91,.18)!important;border-radius:14px!important}',
+  '#simuplcUnoProgress [data-uno-title]{font-size:15px!important;letter-spacing:.1px}',
+  '#simuplcUnoProgress [data-uno-percent]{font-size:14px!important;color:#b9eaff!important}',
+  '@media(max-width:700px){#simuplcUnoProgress{padding:12px!important}#arduinoBoardBox .sub,#arduinoOutputBox .sub,#mcuPinsPanel .sub{display:none!important}}'
+ ].join('');
+ document.head.appendChild(style);
+}
 function install(){
  const actions=document.getElementById('arduinoActions');
  const code=document.getElementById('arduinoCode');
  if(!actions||!code)return;
+ installProgressPresentation();
  if(!document.getElementById('simuplcUnoProgramBtn')){
   const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='✓ Compilar código';btn.title='Compilar código antes de transferirlo al Arduino';btn.addEventListener('click',program);actions.appendChild(btn);
   const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.setAttribute('role','status');s.setAttribute('aria-live','polite');s.textContent='Listo para compilar y programar el Arduino UNO.';actions.appendChild(s);
  }
  if(!document.getElementById('simuplcUnoProgress')){
   const panel=document.createElement('section');
-  panel.id='simuplcUnoProgress';panel.setAttribute('aria-label','Progreso de compilación y programación');
-  panel.style.cssText='width:100%;box-sizing:border-box;padding:12px 15px;margin:6px 0 0;border-radius:12px;background:#09243e;border:1px solid #3779aa;color:#fff;display:flex;flex-direction:column;gap:8px;';
-  panel.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800"><span data-uno-title>Estado del programador</span><span data-uno-percent style="font-variant-numeric:tabular-nums">—</span></div><div style="height:10px;border-radius:12px;background:#274760;overflow:hidden"><div data-uno-fill style="width:0%;height:100%;background:#38bdf8;transition:width .18s linear"></div></div>';
+  panel.id='simuplcUnoProgress';panel.hidden=true;panel.setAttribute('aria-label','Progreso de compilación y programación');
+  panel.style.cssText='width:100%;box-sizing:border-box;padding:12px 15px;margin:6px 0 0;border-radius:12px;background:linear-gradient(125deg,#102a4b,#153f67);border:1px solid #3779aa;color:#fff;display:flex;flex-direction:column;gap:8px;';
+  panel.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800"><span data-uno-title>Estado del programador</span><span data-uno-percent style="font-variant-numeric:tabular-nums">—</span></div><div style="height:10px;border-radius:12px;background:#305575;overflow:hidden"><div data-uno-fill style="width:0%;height:100%;background:#38bdf8;transition:width .18s linear"></div></div>';
   const status=document.getElementById('simuplcUnoProgramStatus');
   actions.insertBefore(panel,status);panel.appendChild(status);
   status.style.cssText='font-size:12px;font-weight:600;line-height:1.45;margin:0;overflow-wrap:anywhere;';
@@ -218,7 +235,7 @@ function resetPreparedFirmware(){
  pendingFirmware=null;
  pendingWindowsPort=null;
  const btn=document.getElementById('simuplcUnoProgramBtn');
- if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
+ if(btn){btn.textContent='✓ Compilar código';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.9-com-stop-fullscreen-bubbling'});
