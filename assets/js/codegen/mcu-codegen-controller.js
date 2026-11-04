@@ -677,8 +677,8 @@
     const hint = document.getElementById('arduinoHint');
     const download = document.getElementById('arduinoDownload');
     const modeBox = document.getElementById('arduinoModeBox');
-    if (title) title.textContent = 'Generador ' + profile.name + ' (.ino)';
-    if (subtitle) subtitle.textContent = 'FBD o Ladder → código estable para ' + profile.name;
+    if (title) title.textContent = 'Programar microcontrolador';
+    if (subtitle) subtitle.textContent = 'Preparar, compilar y transferir · ' + profile.name;
     if (boardInfo) boardInfo.textContent = profile.note;
     if (hint) hint.innerHTML = '<b>Generador USB/OTG analógico:</b> genera I, AI, Q, PWM, AO, PID y SPLIT con protocolo Serial a 115200 baudios para Arduino y ESP32. Incluye HELLO, PING, GET_STATE, MODE, SET, SETA, RUN y STOP sin bloquear el ciclo PLC.';
     if (download) download.textContent = '⬇ Descargar ' + (profile.id === 'esp32' ? 'ESP32 ' : 'Arduino ') + '.ino';
