@@ -92,7 +92,7 @@ async function program(){
    toast('Código de SimuPLC recibido. Compilando localmente…');
    const out=await compile(src);
    pendingFirmware=out.hex;
-   if(btn){btn.textContent=isAndroid()?'🔌 Conectar Arduino por USB/OTG':'⚡ Programar Arduino UNO';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
+   if(btn){btn.textContent=isAndroid()?'⚡ Programar Arduino por USB/OTG':'▶ Programar (Subir)';btn.title='Selecciona tu Arduino conectado y transfiere el programa';}
    toast('✅ Compilación correcta ('+(out.flashBytes||'?')+' bytes). Ahora pulsa «Conectar Arduino por USB/OTG» para autorizar el dispositivo y programarlo.');
    return;
   }
@@ -107,7 +107,7 @@ async function program(){
   await flashHex(hex,pendingWindowsPort);
   pendingFirmware=null;
   pendingWindowsPort=null;
-  if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila el código generado por SimuPLC y prepara la conexión USB';}
+  if(btn){btn.textContent='✓ Compilar / Verificar';btn.title='Compila el código generado por SimuPLC y prepara la conexión USB';}
  }catch(e){
   const message=e&&e.message?e.message:String(e);
   toast('❌ '+message,true);
@@ -149,6 +149,23 @@ function installUnoVisualStyles(){
  '#arduinoActions button{border-radius:12px!important;min-height:44px!important;font-weight:800!important;letter-spacing:.1px;transition:box-shadow .16s ease,transform .16s ease}',
  '#arduinoActions button:hover:not(:disabled){box-shadow:0 5px 16px rgba(15,45,85,.12)}',
  '#arduinoActions button:focus-visible,#simuplcViewCodeBtn:focus-visible{outline:3px solid #60a5fa!important;outline-offset:2px!important}',
+ '#arduinoCard{background:linear-gradient(155deg,#071b34,#0b2442 65%,#061528)!important;color:#e7f4ff!important;border:1px solid #1b719f!important;box-shadow:0 18px 55px #0008!important}',
+ '#arduinoHeader{background:#081c34!important;border-bottom:1px solid #14618d!important;color:#f0fbff!important}',
+ '#arduinoHeader h3{color:#f4fbff!important}',
+ '#arduinoCard #arduinoBoardBox,#arduinoCard #mcuPinsPanel{background:#0d2b4a!important;border:1px solid #23618b!important;color:#eff8ff!important}',
+ '#arduinoCard #arduinoBoardBox *,#arduinoCard #mcuPinsPanel .title{color:#e8f6ff}',
+ '#arduinoCard #mcuPinsPanel .mcu-pin-col{background:#123858!important;border:1px solid #245d83!important}',
+ '#arduinoCard #mcuPinsPanel .mcu-pin-col h4{color:#58dcff!important}',
+ '#arduinoCard #mcuPinsPanel select,#arduinoCard #arduinoBoardBox select{background:#0b213b!important;color:#fff!important;border:1px solid #448db6!important}',
+ '#arduinoCard #arduinoActions{background:#081d35!important;border-top:1px solid #2b6b94!important}',
+ '#arduinoCard #arduinoCode{display:block;background:#061525!important;color:#c5f5ff!important;border:1px solid #2279a4!important;border-radius:12px!important;padding:16px!important;font:13px/1.55 Consolas,Monaco,monospace!important;min-height:230px!important}',
+ '#arduinoCard #simuplcViewCodeBtn{background:linear-gradient(110deg,#005dba,#087fe4)!important;color:#fff!important;border:1px solid #31bfff!important}',
+ '#arduinoCard #simuplcUnoComBtn{background:#0e3852!important;color:#b9f7ff!important;border:1px solid #39c8e9!important}',
+ '#arduinoCard #simuplcUnoProgramBtn{background:linear-gradient(110deg,#00ae3b,#0bd81c)!important;border:1px solid #55ff78!important;color:#fff!important}',
+ '#arduinoCard #simuplcUnoProgramStatus{background:#041527!important;color:#b7ff6b!important;border:1px solid #2382b3!important;border-left:5px solid #24d978!important;font-family:Consolas,monospace!important}',
+ '#arduinoCard #simuplcUnoAdvancedToggle{background:#0d2b4a!important;color:#d9f5ff!important;border:1px solid #2675a4!important}',
+ '#arduinoCard #arduinoOutputBox{background:#0d2b4a!important;color:#fff!important;border:1px solid #23618b!important}',
+ '#arduinoCard #arduinoOutputBox select{background:#0b213b!important;color:#fff!important}',
  '#arduinoCard{--uno-accent:#2563eb}',
  '#arduinoBoardBox{background:linear-gradient(110deg,#eff6ff,#fff)!important;border:1px solid #bfdbfe!important}',
  '#mcuPinsPanel{background:#fff!important;border:1px solid #dbeafe!important}',
@@ -186,7 +203,7 @@ function install(){
  if(!actions||!code)return;
  installUnoVisualStyles();
  if(!document.getElementById('simuplcUnoProgramBtn')){
-  const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';btn.addEventListener('click',program);actions.appendChild(btn);
+  const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='✓ Compilar / Verificar';btn.title='Compila localmente el programa generado por SimuPLC';btn.addEventListener('click',program);actions.appendChild(btn);
   const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.setAttribute('role','status');s.setAttribute('aria-live','polite');s.textContent='Listo para compilar y programar el Arduino UNO.';actions.appendChild(s);
  }
  if(!document.getElementById('simuplcUnoComBtn')){
@@ -198,7 +215,7 @@ function install(){
   actions.insertBefore(com,document.getElementById('simuplcUnoProgramBtn'));
  }
  if(!document.getElementById('simuplcViewCodeBtn')){
-  const toggle=document.createElement('button');toggle.id='simuplcViewCodeBtn';toggle.type='button';toggle.textContent='👁 Ver código C++';toggle.setAttribute('aria-expanded','false');
+  const toggle=document.createElement('button');toggle.id='simuplcViewCodeBtn';toggle.type='button';toggle.textContent='👁 Ver código C++';toggle.setAttribute('aria-expanded','true');
   toggle.style.cssText='display:block;width:100%;max-width:260px;margin:10px 0;padding:11px 14px;border:1px solid #8dbbc9;border-radius:12px;background:#e9f7fb;color:#123c4a;font-weight:800;cursor:pointer;';
   code.parentNode.insertBefore(toggle,code);
   toggle.addEventListener('click',function(){
@@ -254,7 +271,7 @@ function resetPreparedFirmware(){
  pendingFirmware=null;
  pendingWindowsPort=null;
  const btn=document.getElementById('simuplcUnoProgramBtn');
- if(btn){btn.textContent='⚡ Programar Arduino UNO';btn.title='Compila localmente el programa generado por SimuPLC';}
+ if(btn){btn.textContent='✓ Compilar / Verificar';btn.title='Compila localmente el programa generado por SimuPLC';}
 }
 const obs=new MutationObserver(install);obs.observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 global.SimuPLCArduinoUNO=Object.freeze({program,compileGenerated,compile,flashHex,parseHex,getGeneratedSketch:sketch,prepareArduinoSource,version:'2.9-com-stop-fullscreen-bubbling'});
