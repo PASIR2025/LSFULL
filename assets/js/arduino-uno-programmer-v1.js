@@ -161,6 +161,13 @@ function installProgressPresentation(){
  const style=document.createElement('style');
  style.id='simuplcUnoProgressVisual';
  style.textContent=[
+  // Paneles compactos, sin cambiar los controles ni sus eventos.
+  '#arduinoCard #arduinoBoardBox,#arduinoCard #arduinoOutputBox,#arduinoCard #mcuPinsPanel{border:1px solid #d4e2ef!important;border-radius:16px!important;box-shadow:0 4px 15px rgba(20,65,110,.07)!important}',
+  '#arduinoCard[data-theme="light"] #arduinoBoardBox,#arduinoCard[data-theme="light"] #arduinoOutputBox,#arduinoCard[data-theme="light"] #mcuPinsPanel{background:linear-gradient(145deg,#fff,#f4f9ff)!important}',
+  '#arduinoCard #arduinoBoardBox select,#arduinoCard #arduinoOutputBox select,#arduinoCard #mcuPinsPanel select{border-radius:10px!important}',
+  '#arduinoCard #mcuPinsPanel .mcu-pin-col{border-radius:12px!important}',
+  '@media(min-width:1050px){#arduinoCard #arduinoBoardBox,#arduinoCard #arduinoOutputBox,#arduinoCard #mcuPinsPanel{max-width:1180px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important;width:100%!important}#arduinoCard #arduinoOutputBox{padding:14px 18px!important}}',
+  '@media(max-width:700px){#arduinoCard #arduinoBoardBox,#arduinoCard #arduinoOutputBox,#arduinoCard #mcuPinsPanel{padding:12px!important;margin-top:8px!important;margin-bottom:8px!important}#arduinoCard #mcuPinsPanel .mcu-pin-col{padding:10px!important}}',
   '#arduinoHint{display:none!important}',
   '#simuplcUnoProgress[hidden]{display:none!important}',
   '#simuplcUnoProgress{box-shadow:0 6px 20px rgba(15,53,91,.18)!important;border-radius:14px!important}',
@@ -170,11 +177,26 @@ function installProgressPresentation(){
  ].join('');
  document.head.appendChild(style);
 }
+function simplifyUnoDescriptions(){
+ // Solo textos informativos redundantes; no ocultar mensajes de error o validación.
+ for(const id of ['arduinoBoardBox','arduinoOutputBox','mcuPinsPanel']){
+  const section=document.getElementById(id);if(!section)continue;
+  const candidates=section.querySelectorAll('p,small,.sub,.hint,.description,.muted');
+  for(const el of candidates){
+   if(el.children.length||el.closest('button,label,option'))continue;
+   const t=(el.textContent||'').trim();
+   if(/Elige la placa para que|6 entradas analógicas A0|Configura cada salida Q por separado|Cada salida guarda su propia polaridad|Las entradas digitales usan INPUT_PULLUP/i.test(t)){
+    el.style.display='none';
+   }
+  }
+ }
+}
 function install(){
  const actions=document.getElementById('arduinoActions');
  const code=document.getElementById('arduinoCode');
  if(!actions||!code)return;
  installProgressPresentation();
+ simplifyUnoDescriptions();
  if(!document.getElementById('simuplcUnoProgramBtn')){
   const btn=document.createElement('button');btn.id='simuplcUnoProgramBtn';btn.className='primary';btn.type='button';btn.textContent='✓ Compilar código';btn.title='Compilar código antes de transferirlo al Arduino';btn.addEventListener('click',program);actions.appendChild(btn);
   const s=document.createElement('div');s.id='simuplcUnoProgramStatus';s.style.cssText='width:100%;font-size:12px;font-weight:700;margin-top:8px;';s.setAttribute('role','status');s.setAttribute('aria-live','polite');s.textContent='Listo para compilar y programar el Arduino UNO.';actions.appendChild(s);
