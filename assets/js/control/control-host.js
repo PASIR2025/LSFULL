@@ -1,5 +1,13 @@
 (function(){
   'use strict';
+  // Inicialización del sistema multidioma en el host principal (sin tocar motores PLC).
+  if(!window.SimuPLCI18n&&!document.querySelector('script[data-simuplc-i18n]')){
+    const i18nScript=document.createElement('script');
+    i18nScript.src='assets/js/core/i18n-v1.js?v=lsfull-i18n-1';
+    i18nScript.dataset.simuplcI18n='1';
+    i18nScript.onerror=function(){console.warn('[SimuPLC] No se pudo cargar el selector de idioma');};
+    document.head.appendChild(i18nScript);
+  }
   if(window.__SIMUPLC_CONTROL_HOST_V24__) return;
   window.__SIMUPLC_CONTROL_HOST_V24__=true;
 
