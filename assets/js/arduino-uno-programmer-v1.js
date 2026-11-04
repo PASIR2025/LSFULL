@@ -149,6 +149,18 @@ function installUnoVisualStyles(){
  '#arduinoActions button{border-radius:12px!important;min-height:44px!important;font-weight:800!important;letter-spacing:.1px;transition:box-shadow .16s ease,transform .16s ease}',
  '#arduinoActions button:hover:not(:disabled){box-shadow:0 5px 16px rgba(15,45,85,.12)}',
  '#arduinoActions button:focus-visible,#simuplcViewCodeBtn:focus-visible{outline:3px solid #60a5fa!important;outline-offset:2px!important}',
+ '#arduinoCard{--uno-accent:#2563eb}',
+ '#arduinoBoardBox{background:linear-gradient(110deg,#eff6ff,#fff)!important;border:1px solid #bfdbfe!important}',
+ '#mcuPinsPanel{background:#fff!important;border:1px solid #dbeafe!important}',
+ '#arduinoCard[data-theme="dark"] #mcuPinsPanel{background:#102333!important}',
+ '#arduinoCard #arduinoOutputBox{display:none!important}',
+ '#arduinoCard.uno-advanced-open #arduinoOutputBox{display:block!important}',
+ '#simuplcUnoAdvancedToggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 16px;margin:10px 0;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc;color:#1e3a5f;font-weight:800;cursor:pointer;text-align:left}',
+ '#simuplcUnoAdvancedToggle[aria-expanded="true"]{background:#eaf3ff;border-color:#93c5fd}',
+ '#arduinoCard[data-theme="dark"] #simuplcUnoAdvancedToggle{background:#162b40;color:#e2e8f0}',
+ '#simuplcUnoProgramStatus{position:relative!important;font-size:14px!important;font-weight:800!important;padding:13px 16px!important;border-left:5px solid #2563eb!important;box-shadow:0 3px 14px #0f172a12}',
+ '#arduinoHeader h3{font-size:18px!important;letter-spacing:-.3px}',
+ '#arduinoActions{border-radius:14px 14px 0 0!important}',
  '#arduinoHint{display:none!important}',
  '#arduinoBoardBox,#arduinoOutputBox,#mcuPinsPanel{border-radius:16px!important;margin:8px 0!important;padding:12px 14px!important;box-shadow:none!important}',
  '#arduinoBoardBox .sub,#arduinoBoardBox .sub2,#arduinoOutputBox .sub,#arduinoOutputBox .sub2,#mcuPinsPanel .sub2{display:none!important}',
@@ -196,7 +208,25 @@ function install(){
    updateCodeVisibility();
   });
  }
+ installUnoAdvancedToggle();
  updateCodeVisibility();
+}
+function installUnoAdvancedToggle(){
+ // Crear una sola vez; no trasladar nodos existentes (evita el bloqueo anterior).
+ const output=document.getElementById('arduinoOutputBox');
+ const card=document.getElementById('arduinoCard');
+ if(!output||!card||document.getElementById('simuplcUnoAdvancedToggle'))return;
+ const toggle=document.createElement('button');
+ toggle.id='simuplcUnoAdvancedToggle';toggle.type='button';
+ toggle.textContent='⚙ Configuración avanzada: polaridad de salidas  ▾';
+ toggle.setAttribute('aria-expanded','false');
+ toggle.setAttribute('aria-controls','arduinoOutputBox');
+ toggle.addEventListener('click',function(){
+  const open=card.classList.toggle('uno-advanced-open');
+  toggle.setAttribute('aria-expanded',String(open));
+  toggle.textContent=open?'⚙ Ocultar configuración avanzada  ▴':'⚙ Configuración avanzada: polaridad de salidas  ▾';
+ });
+ output.parentNode.insertBefore(toggle,output);
 }
 function updateCodeVisibility(){
  const code=document.getElementById('arduinoCode'),toggle=document.getElementById('simuplcViewCodeBtn');
