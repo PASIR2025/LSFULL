@@ -73,8 +73,7 @@ function init(){
  if(!chosen)showPicker(true);
  ['controlFrame','ladderFrame'].forEach(id=>document.getElementById(id)?.addEventListener('load',apply));
  // Traduce etiquetas conocidas añadidas dinámicamente sin tocar el contenido de los proyectos.
- const obs=new MutationObserver(()=>{if(!busy)apply();});
- obs.observe(document.body,{childList:true,subtree:true});
+ // Dynamic UI translation is deferred until the next safe integration phase.
 }
 global.SimuPLCI18n={getLanguage:()=>current,setLanguage,translate:apply,t,showPicker,languages:Object.assign({},languages)};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
