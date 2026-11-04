@@ -62,13 +62,68 @@ function showPicker(first){
  if(!first){const cancel=document.createElement('button');cancel.textContent=t('cancel');cancel.style.cssText='background:#edf2f8;color:#233b56;margin-top:8px';cancel.onclick=()=>overlay.remove();panel.appendChild(cancel);}
  overlay.appendChild(panel);document.body.appendChild(overlay);select.focus();
 }
+// Inserción aislada en la ventana de Preferencias, sin modificar su lógica original.
+const observedDocs=new WeakSet();
+function installPreferencesIntegration(doc){
+ if(!doc||!doc.body||observedDocs.has(doc))return;
+ observedDocs.add(doc);
+ let pending=false;
+ function scan(){
+  pending=false;
+  if(!doc.body)return;
+  const headings=Array.from(doc.querySelectorAll('h1,h2,h3,h4,[role="heading"]'));
+  const heading=headings.find(el=>/Preferencias del editor|Editor preferences|Preferências do editor/i.test((el.textContent||'').trim()));
+  if(!heading)return;
+  let modal=heading;
+  for(let i=0;i<7&&modal.parentElement;i++){
+   modal=modal.parentElement;
+   if(modal.querySelectorAll('select').length>=2)break;
+  }
+  if(modal.querySelector('#simuplc-preferences-language'))return;
+  const selects=Array.from(modal.querySelectorAll('select'));
+  if(!selects.length)return;
+  const theme=selects[0];
+  let target=theme.parentElement;
+  for(let i=0;i<3&&target.parentElement;i++){
+   const p=target.parentElement;
+   if(p.querySelectorAll('select').length>1)break;
+   target=p;
+  }
+  if(!target.parentElement)return;
+  const group=doc.createElement('div');
+  group.id='simuplc-preferences-language';
+  group.style.cssText='margin:0 0 18px;padding:0 0 16px;border-bottom:1px solid #dce5ef;font-family:inherit';
+  const label=doc.createElement('label');
+  label.htmlFor='simuplc-language-preference-select';
+  label.textContent=t('language');
+  label.style.cssText='display:block;font-weight:700;color:#415168;margin-bottom:9px';
+  const select=doc.createElement('select');
+  select.id='simuplc-language-preference-select';
+  select.style.cssText='display:block;width:100%;box-sizing:border-box;min-height:46px;padding:10px 12px;border:1px solid #acbaca;border-radius:9px;background:white;color:#1d2d3f;font:600 16px inherit';
+  Object.entries(languages).forEach(([code,name])=>{const opt=doc.createElement('option');opt.value=code;opt.textContent=name;select.appendChild(opt);});
+  select.value=current;
+  select.addEventListener('change',()=>{setLanguage(select.value,true);label.textContent=t('language');});
+  const hint=doc.createElement('p');
+  hint.textContent='Control · Ladder · FBD · HMI';
+  hint.style.cssText='margin:7px 0 0;font-size:12px;color:#617187';
+  group.append(label,select,hint);
+  target.parentElement.insertBefore(group,target);
+ }
+ function schedule(){if(pending)return;pending=true;setTimeout(scan,0);}
+ const obs=new MutationObserver(schedule);
+ obs.observe(doc.body,{subtree:true,childList:true});
+ schedule();
+}
 function init(){
  if(!document.body)return;
  style();apply();
- // Acceso permanente, sin alterar el editor ni sus controles de simulación.
- if(!document.getElementById('simuplc-language-shortcut')){
- const b=document.createElement('button');b.id='simuplc-language-shortcut';b.type='button';b.textContent='🌐 '+t('language');b.onclick=()=>showPicker(false);document.body.appendChild(b);
- }
+ // El idioma se configura desde Preferencias de Control; no hay botón flotante.
+ document.getElementById('simuplc-language-shortcut')?.remove();
+ installPreferencesIntegration(document);
+ const control=document.getElementById('controlFrame');
+ if(control)control.addEventListener('load',()=>{try{installPreferencesIntegration(control.contentDocument);}catch(_){}});
+ try{if(control&&control.contentDocument)installPreferencesIntegration(control.contentDocument);}catch(_){}
+
  let chosen=false;try{chosen=localStorage.getItem(FIRST)==='1';}catch(_){}
  if(!chosen)showPicker(true);
  ['controlFrame','ladderFrame'].forEach(id=>document.getElementById(id)?.addEventListener('load',apply));
