@@ -181,37 +181,7 @@ function install(){
    updateCodeVisibility();
   });
  }
- installModernUnoUI(actions);
- updateProgramLabel();
  updateCodeVisibility();
-}
-function installModernUnoUI(actions){
- if(!document.getElementById('simuplcUnoModernStyles')){
-  const style=document.createElement('style');style.id='simuplcUnoModernStyles';
-  style.textContent='#simuplcUnoProgress{padding:15px 18px;margin:12px 0;border:1px solid #bfdbfe;border-radius:15px;background:#eff6ff;color:#16324d}#simuplcUnoProgress[hidden]{display:none!important}#simuplcUnoProgress [data-phase]{font-weight:850;font-size:17px}#simuplcUnoProgress .track{height:9px;background:#dbeafe;border-radius:30px;overflow:hidden;margin:12px 0}#simuplcUnoProgress [data-bar]{height:100%;width:12%;background:#2563eb;border-radius:30px;transition:width .25s}#simuplcUnoProgramStatus{font-size:13px!important;line-height:1.5!important;overflow-wrap:anywhere}#simuplcUnoAdvanced{padding:10px 14px;border:1px solid #dbe4ef;border-radius:14px;margin:12px 0;background:#f8fafc}#simuplcUnoAdvanced>summary{font-weight:800;cursor:pointer;color:#244567;padding:5px}#simuplcUnoProgramBtn{border-radius:12px!important;min-height:46px!important;font-weight:800!important}';
-  document.head.appendChild(style);
- }
- if(!document.getElementById('simuplcUnoProgress')){
-  const panel=document.createElement('section');panel.id='simuplcUnoProgress';panel.hidden=true;panel.setAttribute('role','status');
-  panel.innerHTML='<div data-phase>Estado del programador</div><div class="track"><div data-bar></div></div>';
-  const status=document.getElementById('simuplcUnoProgramStatus');
-  if(status){panel.appendChild(status);actions.parentNode.insertBefore(panel,actions);}
- }
- if(!document.getElementById('simuplcUnoAdvanced')){
-  const heading=Array.from(document.querySelectorAll('h2,h3,h4')).find(el=>/Polaridad de salidas/i.test(el.textContent||''));
-  if(heading){
-   let section=heading;
-   for(let i=0;i<4&&section.parentElement;i++){
-    if(section.parentElement.querySelector('select')&&section.parentElement.querySelector('button')){section=section.parentElement;break;}
-    section=section.parentElement;
-   }
-   if(section&&section!==document.body&&!section.contains(actions)&&section.parentNode){
-    const details=document.createElement('details');details.id='simuplcUnoAdvanced';
-    const summary=document.createElement('summary');summary.textContent='⚙ Configuración avanzada · Polaridad de salidas';details.appendChild(summary);
-    section.parentNode.insertBefore(details,section);details.appendChild(section);
-   }
-  }
- }
 }
 function updateCodeVisibility(){
  const code=document.getElementById('arduinoCode'),toggle=document.getElementById('simuplcViewCodeBtn');
